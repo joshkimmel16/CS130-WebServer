@@ -1,0 +1,3 @@
+foo "does this 'work'";
+bar 'how about "this"';
+tool 'and 'how about this' yay';

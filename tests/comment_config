@@ -1,0 +1,18 @@
+# this is a comment
+
+server { # server { foo stuff; };
+  # this is another comment
+  listen   80;
+  server_name foo.com; # comment here
+  # this is a comment as well
+  root /home/ubuntu/sites/foo/;
+} # ended
+
+# http {}
+
+something {
+  another thing;
+}
+
+# some more comments
+# last comment

@@ -1,0 +1,6 @@
+user hello;
+pid /some/path/to/this.pid;
+processes 4;
+type text/plain;
+send_timeout 3m;
+include something/another.types;

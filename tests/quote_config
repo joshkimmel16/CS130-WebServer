@@ -1,0 +1,4 @@
+user "hello";
+foo 'b';
+foo "you're cool!";
+complex "wowowo342424 !~!#; { } hello '";

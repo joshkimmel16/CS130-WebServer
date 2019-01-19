@@ -1,0 +1,27 @@
+http { # first
+  server { # second woo! "server { };
+      port 8080;
+      
+      # hello
+      location / {
+          root /band;
+      }
+
+      location /hello/ {
+          root /bar;
+      } # finished last one
+  } #ignore me
+} 
+
+give me a break;
+
+another {
+  one {
+    something/in/here;
+  }
+
+  two {
+    hello "there";
+    no 'way' ;
+  } # more?
+}

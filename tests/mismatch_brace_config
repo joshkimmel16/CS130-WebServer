@@ -1,0 +1,3 @@
+server { foo "bear"; } yay; }
+
+server2 { head "toe"; { foo "bear"; }
