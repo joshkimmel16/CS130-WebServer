@@ -22,4 +22,5 @@ private:
   tcp::socket socket_;
   enum { max_length = 1024 };
   char data_[max_length];
+  char send_out[max_length];
 };

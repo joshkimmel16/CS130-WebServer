@@ -44,11 +44,14 @@ void session::handle_read(const boost::system::error_code& error,
   size_t bytes_transferred) 
 {
     if (!error) 
-    {
+    { 
+      char hdr[max_length] = "HTTP-1.1 200 OK Content-Type:text/plain ";
+      size_t hdr_len = 40;
+      std::memcpy(&hdr[hdr_len], data_, bytes_transferred);
       boost::asio::async_write(socket_,
-          boost::asio::buffer(data_, bytes_transferred),
+          boost::asio::buffer(hdr, 40 + bytes_transferred),
           boost::bind(&session::handle_write, this,
-            boost::asio::placeholders::error));
+          boost::asio::placeholders::error));
     }
     else 
     {
@@ -64,9 +67,9 @@ void session::handle_write(const boost::system::error_code& error)
     if (!error) 
     {
       socket_.async_read_some(boost::asio::buffer(data_, max_length),
-          boost::bind(&session::handle_read, this,
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+         boost::bind(&session::handle_read, this,
+         boost::asio::placeholders::error,
+         boost::asio::placeholders::bytes_transferred));
     }
     else 
     {
