@@ -11,9 +11,11 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "session.h"
+#include "response.h"
 
 using boost::asio::ip::tcp;
 
@@ -45,11 +47,15 @@ void session::handle_read(const boost::system::error_code& error,
 {
     if (!error) 
     { 
-      char hdr[max_length] = "HTTP-1.1 200 OK Content-Type:text/plain ";
-      size_t hdr_len = 40;
+      char hdr[max_length] = "HTTP-1.1 200 OK\r\nContent-Type:text/plain\r\n";
+      size_t hdr_len = std::strlen(hdr);
+//      Response out_msg;
+//      out_msg.set_request_msg(data_);
+      
       std::memcpy(&hdr[hdr_len], data_, bytes_transferred);
+
       boost::asio::async_write(socket_,
-          boost::asio::buffer(hdr, 40 + bytes_transferred),
+          boost::asio::buffer(hdr, std::strlen(hdr)),
           boost::bind(&session::handle_write, this,
           boost::asio::placeholders::error));
     }
