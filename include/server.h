@@ -1,5 +1,6 @@
 // A TCP web server
 #include "session.h"
+#include "config_parser.h"
 
 using boost::asio::ip::tcp;
 

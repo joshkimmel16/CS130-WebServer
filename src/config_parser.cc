@@ -157,7 +157,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
-    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
+    // printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
     if (token_type == TOKEN_TYPE_ERROR) {
       break;
     }
@@ -249,4 +249,39 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
       Parse(dynamic_cast<std::istream*>(&config_file), config);
   config_file.close();
   return return_value;
+}
+
+bool NginxConfig::ParseString() {
+  int port = -1;
+  bool found_port = false;
+
+  for (const auto& statement : statements_) {
+    // get the tokens
+    std::vector<std::string> tokens = statement->tokens_;
+
+    // loop through each token; storing values as necessary
+    int del_pos = 0;
+    int curr_pos = 0;
+    for (unsigned int i = 0; i < tokens.size(); ++i) {
+      std::string token = tokens[i];
+      if (found_port && port < 0) {
+        port = std::stoi(token);
+        if (port < 0) {
+          std::cerr << "Bad port number.\n";
+          found_port = false;
+          break;
+        }
+        port_ = port;
+      }
+      if (token == "port") {
+        found_port = true;
+      }
+    }
+  }
+
+  return found_port;
+}
+
+int NginxConfig::GetPort() {
+  return port_;
 }

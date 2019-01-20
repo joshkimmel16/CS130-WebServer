@@ -20,6 +20,13 @@ class NginxConfig {
  public:
   std::string ToString(int depth = 0);
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
+
+  // returns true iff retrieved expected variables
+  bool ParseString();
+  int GetPort();
+  
+ private:
+  int port_;
 };
 
 // The driver that parses a config file and generates an NginxConfig.

@@ -19,14 +19,27 @@ int main(int argc, char* argv[])
   {
     if (argc != 2)
     {
-      std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      // std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      std::cerr << "Usage: async_tcp_echo_server <path to config file>\n";
       return 1;
     }
 
+    // parse config file
+    NginxConfigParser config_parser;
+    NginxConfig config;
+    config_parser.Parse(argv[1], &config);
+
+    if (!config.ParseString()) {
+      std::cerr << "Failed to get port number.\n";
+      return -1;
+    } 
+    int port = config.GetPort();
+
     boost::asio::io_service io_service;
 
-    using namespace std; // For atoi.
-    server s(io_service, atoi(argv[1]));
+    // using namespace std; // For atoi.
+    // server s(io_service, atoi(argv[1]));
+    server s(io_service, port);
 
     io_service.run();
   }
