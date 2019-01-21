@@ -54,7 +54,7 @@ void session::handle_read(const boost::system::error_code& error,
       //check request for validity
       if (req->is_valid())
       {
-          char hdr[max_length] = "HTTP-1.1 200 OK\r\nContent-Type:text/plain\r\n\r\n";
+          char hdr[max_length] = "HTTP/1.1 200 OK\r\nContent-Type:text/plain\r\n\r\n";
           size_t hdr_len = std::strlen(hdr);
           
           std::memcpy(&hdr[hdr_len], req->get_raw_request(), req->get_request_size());
@@ -66,7 +66,7 @@ void session::handle_read(const boost::system::error_code& error,
       }
       else
       {
-          char hdr[max_length] = "HTTP-1.1 400 Bad Request\r\nContent-Type:text/plain\r\n\r\n";
+          char hdr[max_length] = "HTTP/1.1 400 Bad Request\r\nContent-Type:text/plain\r\n\r\n";
           size_t hdr_len = std::strlen(hdr);
           
           std::memcpy(&hdr[hdr_len], req->get_raw_request(), req->get_request_size());
