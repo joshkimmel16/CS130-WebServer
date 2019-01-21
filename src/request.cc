@@ -50,7 +50,7 @@ std::string request::get_header (std::string name)
     }
     else
     {
-        return null;
+        return "";
     }
 }
 
@@ -135,7 +135,7 @@ bool request::parse_headers(std::string req)
     {
         if (iter->size() == 3)
         {
-            std::pair<std::string, std::string> h ((*iter)[1], (*iter[2]));
+            std::pair<std::string, std::string> h ((*iter)[1], (*iter)[2]);
             request_headers_.insert(h);
         }
         else
