@@ -150,3 +150,38 @@ TEST_F(NginxConfigParserTest, CommentBraceConfig) {
 
   EXPECT_FALSE(success);
 }
+
+TEST_F(NginxConfigParserTest, PortConfig) {
+  bool parse_config = parser.Parse("port_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+}
+
+TEST_F(NginxConfigParserTest, BadPortConfig) {
+  bool parse_config = parser.Parse("bad_port_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_FALSE(parse_stmt);
+
+}
+
+TEST_F(NginxConfigParserTest, BadPortNumConfig) {
+  bool parse_config = parser.Parse("bad_port_num_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_FALSE(parse_stmt);
+
+}
+
+TEST_F(NginxConfigParserTest, NoPortNumConfig) {
+  bool parse_config = parser.Parse("no_port_num_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_FALSE(parse_stmt);
+
+}

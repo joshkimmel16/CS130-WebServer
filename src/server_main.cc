@@ -29,9 +29,8 @@ int main(int argc, char* argv[])
     NginxConfig config;
     config_parser.Parse(argv[1], &config);
 
-    if (!config.ParseString()) {
-      std::cerr << "Failed to get port number.\n";
-      return -1;
+    if (!config.ParseStatements()) {
+      return 1;
     } 
     int port = config.GetPort();
 

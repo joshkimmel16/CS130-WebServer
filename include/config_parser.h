@@ -22,7 +22,7 @@ class NginxConfig {
   std::vector<std::shared_ptr<NginxConfigStatement>> statements_;
 
   // returns true iff retrieved expected variables
-  bool ParseString();
+  bool ParseStatements();
   int GetPort();
   
  private:

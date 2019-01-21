@@ -251,10 +251,11 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
   return return_value;
 }
 
-bool NginxConfig::ParseString() {
+bool NginxConfig::ParseStatements() {
   int port = -1;
   bool found_port = false;
 
+  // loop through each statement; looking at the tokens
   for (const auto& statement : statements_) {
     // get the tokens
     std::vector<std::string> tokens = statement->tokens_;
@@ -262,23 +263,37 @@ bool NginxConfig::ParseString() {
     // loop through each token; storing values as necessary
     int del_pos = 0;
     int curr_pos = 0;
+    std::string prev_token = "";
     for (unsigned int i = 0; i < tokens.size(); ++i) {
       std::string token = tokens[i];
-      if (found_port && port < 0) {
-        port = std::stoi(token);
-        if (port < 0) {
-          std::cerr << "Bad port number.\n";
-          found_port = false;
-          break;
+
+      // found port and store if valid
+      // currently only accepts format: port port_num;
+      if (prev_token == "port" && !found_port) {
+        try {
+          port = std::stoi(token);
+          if (port >= 0) {
+            port_ = port;
+            found_port = true;
+          }
+          else {
+            std::cerr << "Bad port number.\n";
+            break;
+          }
         }
-        port_ = port;
+        catch(std::exception& e) {
+          std::cerr << "Failed to convert port to a number.\n";
+          break;
+        }      
       }
-      if (token == "port") {
-        found_port = true;
-      }
+
+      prev_token = token;
     }
   }
 
+  if (!found_port) {
+    std::cerr << "No valid port number found.\n";
+  }
   return found_port;
 }
 
