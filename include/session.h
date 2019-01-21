@@ -3,6 +3,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include "request.h"
 
 using boost::asio::ip::tcp;
 

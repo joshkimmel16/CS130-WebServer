@@ -47,17 +47,35 @@ void session::handle_read(const boost::system::error_code& error,
 {
     if (!error) 
     { 
-      char hdr[max_length] = "HTTP-1.1 200 OK\r\nContent-Type:text/plain\r\n";
-      size_t hdr_len = std::strlen(hdr);
-//      Response out_msg;
-//      out_msg.set_request_msg(data_);
+      //parse raw request to a request object
+      char* d = data_;
+      request* req = new request(d, bytes_transferred);
       
-      std::memcpy(&hdr[hdr_len], data_, bytes_transferred);
-
-      boost::asio::async_write(socket_,
-          boost::asio::buffer(hdr, std::strlen(hdr)),
-          boost::bind(&session::handle_write, this,
-          boost::asio::placeholders::error));
+      //check request for validity
+      if (req->is_valid())
+      {
+          char hdr[max_length] = "HTTP-1.1 200 OK\r\nContent-Type:text/plain\r\n\r\n";
+          size_t hdr_len = std::strlen(hdr);
+          
+          std::memcpy(&hdr[hdr_len], req->get_raw_request(), req->get_request_size());
+          
+          boost::asio::async_write(socket_,
+            boost::asio::buffer(hdr, std::strlen(hdr)),
+            boost::bind(&session::handle_write, this,
+            boost::asio::placeholders::error));
+      }
+      else
+      {
+          char hdr[max_length] = "HTTP-1.1 400 Bad Request\r\nContent-Type:text/plain\r\n\r\n";
+          size_t hdr_len = std::strlen(hdr);
+          
+          std::memcpy(&hdr[hdr_len], req->get_raw_request(), req->get_request_size());
+          
+          boost::asio::async_write(socket_,
+            boost::asio::buffer(hdr, std::strlen(hdr)),
+            boost::bind(&session::handle_write, this,
+            boost::asio::placeholders::error));
+      }
     }
     else 
     {
