@@ -54,10 +54,9 @@ void session::handle_read(const boost::system::error_code& error,
       //check request for validity
       if (req->is_valid())
       {
-          char hdr[max_length] = "HTTP/1.1 200 OK\r\nContent-Type:text/plain\r\n\r\n";
-          size_t hdr_len = std::strlen(hdr);
-          
-          std::memcpy(&hdr[hdr_len], req->get_raw_request(), req->get_request_size());
+          response* resp = new response(200, std::string(req->get_raw_request()));
+          resp->set_header("Content-Type", "text/plain");
+          const char* hdr = resp->generate_response();
           
           boost::asio::async_write(socket_,
             boost::asio::buffer(hdr, std::strlen(hdr)),
@@ -66,10 +65,9 @@ void session::handle_read(const boost::system::error_code& error,
       }
       else
       {
-          char hdr[max_length] = "HTTP/1.1 400 Bad Request\r\nContent-Type:text/plain\r\n\r\n";
-          size_t hdr_len = std::strlen(hdr);
-          
-          std::memcpy(&hdr[hdr_len], req->get_raw_request(), req->get_request_size());
+          response* resp = new response(400, std::string(req->get_raw_request()));
+          resp->set_header("Content-Type", "text/plain");          
+          const char* hdr = resp->generate_response();
           
           boost::asio::async_write(socket_,
             boost::asio::buffer(hdr, std::strlen(hdr)),

@@ -60,15 +60,15 @@ void response::set_body (std::string body)
 
 //generate a well-formed HTTP response based on internal attributes
 //return the response as a C string so it can be written on a socket
-char* response::generate_response ()
+const char* response::generate_response ()
 {
-    string output = "";
+    std::string output = "";
     output += generate_status_line();
     output += generate_header_lines();
     output += response_body_;
-    
-    char* r = output.c_str();
-    return r;
+   
+    response_ = output;
+    return response_.c_str();
 }
 
 //generate a well-formed HTTP response status line based on internal attributes
