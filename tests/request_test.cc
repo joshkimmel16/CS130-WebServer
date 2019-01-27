@@ -97,3 +97,17 @@ TEST_F(RequestTest, BadRequestLine) {
   request* req = new request(r, r_size);
   EXPECT_FALSE(req->is_valid());
 }
+
+
+TEST_F(RequestTest, EmptyRequest){
+  std::string input = "";
+  int n = input.length();
+  char char_array[n+1];
+  strcpy(char_array, input.c_str());
+  r = char_array;
+  r_size = std::strlen(char_array);
+
+  request* req = new request(r, r_size);
+  EXPECT_FALSE(req->is_valid());
+}
+

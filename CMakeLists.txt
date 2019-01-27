@@ -54,6 +54,12 @@ add_executable(request_test tests/request_test.cc)
 target_link_libraries(request_test request gtest_main)
 add_executable(response_test tests/response_test.cc)
 target_link_libraries(response_test response gtest_main)
+add_executable(session_test tests/session_test.cc)
+target_link_libraries(session_test session gtest_main)
+add_executable(server_test tests/server_test.cc)
+target_link_libraries(server_test server gtest_main)
+
+
 
 # TODO(!): Update with test binary
 # gtest_discover_tests(example_lib_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)

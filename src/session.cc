@@ -34,10 +34,15 @@ tcp::socket& session::socket ()
 //TODO: is this actually what's happening here?
 void session::start() 
 {
-socket_.async_read_some(boost::asio::buffer(data_, max_length),
-    boost::bind(&session::handle_read, this,
-      boost::asio::placeholders::error,
-      boost::asio::placeholders::bytes_transferred));
+     read();
+}
+
+
+void session::read(){
+     socket_.async_read_some(boost::asio::buffer(data_, max_length),
+       boost::bind(&session::handle_read, this,
+       boost::asio::placeholders::error,
+       boost::asio::placeholders::bytes_transferred));
 }
 
 //handle_read is a callback for when the session reads data from the requestor
@@ -54,31 +59,28 @@ void session::handle_read(const boost::system::error_code& error,
       //check request for validity
       if (req->is_valid())
       {
-          response* resp = new response(200, std::string(req->get_raw_request()));
-          resp->set_header("Content-Type", "text/plain");
-          const char* hdr = resp->generate_response();
-          
-          boost::asio::async_write(socket_,
-            boost::asio::buffer(hdr, std::strlen(hdr)),
-            boost::bind(&session::handle_write, this,
-            boost::asio::placeholders::error));
+	write(req, OK);
       }
       else
       {
-          response* resp = new response(400, std::string(req->get_raw_request()));
-          resp->set_header("Content-Type", "text/plain");          
-          const char* hdr = resp->generate_response();
-          
-          boost::asio::async_write(socket_,
-            boost::asio::buffer(hdr, std::strlen(hdr)),
-            boost::bind(&session::handle_write, this,
-            boost::asio::placeholders::error));
+	write(req, INVALID);
       }
     }
     else 
     {
       delete this;
     }
+}
+
+void session::write(request* req, const unsigned int status_code){
+     response* resp = new response(status_code, std::string(req->get_raw_request()));
+     resp->set_header("Content-Type", "text/plain");
+     const char* hdr = resp->generate_response();
+
+     boost::asio::async_write(socket_,
+        boost::asio::buffer(hdr, std::strlen(hdr)),
+        boost::bind(&session::handle_write, this,
+        boost::asio::placeholders::error));
 }
 
 //handle_write is a callback for when the server writes data to the requestor
