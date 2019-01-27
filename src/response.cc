@@ -42,14 +42,25 @@ std::string response::get_body ()
 //set the status code
 void response::set_status_code (unsigned int sc)
 {
-    status_code_ = sc;
+    if(sc == 200 || sc == 400)
+    {
+    	status_code_ = sc;
+    }
 }
 
 //set a specific header
 void response::set_header (std::string h_name, std::string h_value)
 {
-    std::pair<std::string, std::string> h (h_name, h_value);
-    response_headers_.insert(h);
+    auto it = response_headers_.find(h_name);
+    if(it != response_headers_.end())
+    {
+	it->second = h_value;
+    }
+    else
+    {
+        std::pair<std::string, std::string> h (h_name, h_value);
+        response_headers_.insert(h);
+    }
 }
 
 //set the response body
