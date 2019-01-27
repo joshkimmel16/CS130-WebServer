@@ -2,17 +2,30 @@
 
 #function to print proper usage for the bash script
 print_usage() {
-  STR=$'Valid commands are:\n-h help\n-c PATH TO SERVER CONFIG\n-n USE NETCAT INSTEAD OF CURL\n-p PORT THAT WEB SERVER IS RUNNING ON\n-m VALID REQUEST METHOD\n-b VALID REQUEST BODY\n-o PATH TO FILE CONTAINING THE EXPECTED OUTPUT FOR THE GIVEN REQUEST'
+  STR=$'Valid commands are:\n-h Help.\n-c Path to server config file. Default is: "Integration/integration_config".\n-n Use netcat (nc) instead of cURL\n-p Port that the web server will run on. Default is: 8080.\n-m Request method (cURL only). Default is: "GET"\n-d Header for the request (cURL only). This option can be used multiple times (per header to be added).\n-b Request body (cURL) OR entire request (netcat). Empty by default.\n-o Path to a file containing the expected response for the given test. Default is: Integration/expected_output.'
   echo "$STR"
   exit 1
 }
 
+create_header_string() {
+    if [ ! ${#REQ_HEADERS[@]} -eq 0 ]
+    then
+        for header in "${REQ_HEADERS[@]}"; do
+            if [ ! -z "$header" ]
+            then
+                REQ_HEADER_STRING+=" -H ${header} "
+            fi
+        done
+    fi
+}
+
 create_curl_request() {
+    create_header_string
     if [ ! -z "$REQ_BODY" ]
     then
-        REQ_COMMAND="curl -i -X ${REQ_METHOD} --data \"${REQ_BODY}\" http://localhost:${SERVER_PORT}"
+        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} --data \"${REQ_BODY}\" http://localhost:${SERVER_PORT}"
     else
-        REQ_COMMAND="curl -i -X ${REQ_METHOD} http://localhost:${SERVER_PORT}"
+        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} http://localhost:${SERVER_PORT}"
     fi
 }
 
@@ -26,7 +39,11 @@ CONFIG="Integration/integration_config"
 USE_NETCAT="0"
 
 REQ_COMMAND=""
+
+REQ_COMMAND=""
 REQ_METHOD="GET"
+REQ_HEADERS=
+REQ_HEADER_STRING=""
 REQ_BODY=
 
 SERVER_PATH="$(pwd)/../build/bin/server_main"
@@ -36,7 +53,7 @@ SERVER_PORT="8080"
 EXPECTED_OUTPUT="Integration/expected_output"
 
 #capture arguments to the script
-while getopts "hc:np:m:b:o:" opt; do
+while getopts "hc:np:m:d:b:o:" opt; do
   case $opt in
     h)
       print_usage
@@ -52,6 +69,9 @@ while getopts "hc:np:m:b:o:" opt; do
       ;;
     m)
       REQ_METHOD=$OPTARG
+      ;;
+    d)
+      REQ_HEADERS+=($OPTARG)
       ;;
     b)
       REQ_BODY=$OPTARG
@@ -75,7 +95,7 @@ SERVER_PID=$!
 #check to ensure the server is running
 if [ ! -z "$SERVER_PID" ]
 then
-    echo "Server is running!"
+    #give the server some time to start up
     sleep 0.3
     
     #generate the appropriate request
@@ -84,22 +104,26 @@ then
     then
         create_nc_request
         OUTPUT=$(echo $REQ_BODY | $REQ_COMMAND)
-        echo "$OUTPUT" &> "Integration/tmp"
+        echo "$OUTPUT" &> "Integration/temp"
     else
         create_curl_request
-        $($REQ_COMMAND &> Integration/tmp)
+        $($REQ_COMMAND &> Integration/temp)
     fi
     
     #diff the output with some expected result
-    #TODO: FIGURE THIS OUT
-    #DIFF=$(diff Integration/tmp $EXPECTED_OUTPUT)
+    VERIFY=$(grep -Fwf $EXPECTED_OUTPUT Integration/temp)
+    if [ -z "$VERIFY" ]
+    then
+        echo "The results don't match!"
+        kill $SERVER_PID
+        exit 1
+    fi
     
     #kill server process
-    #TODO: GETTING ERROR WHEN TRYING TO REMOVE TEMP FILE
     kill $SERVER_PID
 else
     echo "The web server failed to start!"
-    exit 2
+    exit 1
 fi
 
 exit 0
