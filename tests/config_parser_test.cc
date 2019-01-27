@@ -135,6 +135,18 @@ TEST_F(NginxConfigParserTest, MixedQuoteConfig) {
   EXPECT_EQ(out_config.ToString(), "foo \"does this 'work'\";\nbar 'how about \"this\"';\ntool 'and ' how about this' yay';\n");
 }
 
+TEST_F(NginxConfigParserTest, MismatchSingleQuoteConfig) {
+  bool success = parser.Parse("mismatch_single_quote_config", &out_config);
+
+  EXPECT_FALSE(success);
+}
+
+TEST_F(NginxConfigParserTest, MismatchDoubleQuoteConfig) {
+  bool success = parser.Parse("mismatch_double_quote_config", &out_config);
+
+  EXPECT_FALSE(success);
+}
+
 TEST_F(NginxConfigParserTest, ComboConfig) {
   bool success = parser.Parse("combo_config", &out_config);
 
