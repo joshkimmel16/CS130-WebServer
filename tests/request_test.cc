@@ -22,6 +22,8 @@ TEST_F(RequestTest, RequestLineOnly) {
   request* req = new request(r, r_size);
   EXPECT_EQ(req->get_method(), "GET");
   EXPECT_TRUE(req->is_valid());
+  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  EXPECT_EQ(req->get_request_size(), r_size);
 }
 
 //valid HTTP request with a request line and headers but no body
@@ -38,6 +40,8 @@ TEST_F(RequestTest, RequestLineAndHeaders) {
   EXPECT_EQ(req->get_header("Accept"), "application/json");
   EXPECT_EQ(req->get_header("User-Agent"), "Chrome");
   EXPECT_TRUE(req->is_valid());
+  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  EXPECT_EQ(req->get_request_size(), r_size);
 }
 
 //valid HTTP request with a request line and a body but no headers
@@ -53,6 +57,8 @@ TEST_F(RequestTest, RequestLineAndBody) {
   EXPECT_EQ(req->get_method(), "POST");
   EXPECT_EQ(req->get_body(), "blahblahblah");
   EXPECT_TRUE(req->is_valid());
+  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  EXPECT_EQ(req->get_request_size(), r_size);
 }
 
 //valid HTTP request with a request line, headers, and a body
@@ -68,8 +74,11 @@ TEST_F(RequestTest, FullRequest) {
   EXPECT_EQ(req->get_method(), "PUT");
   EXPECT_EQ(req->get_header("Content-Type"), "application/json");
   EXPECT_EQ(req->get_header("Authorization"), "password");
+  EXPECT_EQ(req->get_header("Random"), "");
   EXPECT_EQ(req->get_body(), "blahblahblah");
   EXPECT_TRUE(req->is_valid());
+  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  EXPECT_EQ(req->get_request_size(), r_size);
 }
 
 //totally garbage request

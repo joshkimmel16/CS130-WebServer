@@ -76,6 +76,7 @@ void request::parse_request ()
         req += raw_request_[i];
     }
     
+    valid_ = false;
     bool out1 = parse_method(req);
     if (out1)
     {
@@ -87,19 +88,7 @@ void request::parse_request ()
             {
                 valid_ = true;
             }
-            else
-            {
-                valid_ = false;
-            }
         }
-        else
-        {
-            valid_ = false;
-        }
-    }
-    else
-    {
-        valid_ = false;
     }
 }
 
