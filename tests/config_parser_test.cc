@@ -11,6 +11,7 @@ TEST_F(NginxConfigParserTest, SimpleConfig) {
   bool success = parser.Parse("example_config", &out_config);
 
   EXPECT_TRUE(success);
+  EXPECT_EQ(out_config.ToString(), "foo \"bar\";\nserver {\n  listen 80;\n  server_name foo.com;\n  root /home/ubuntu/sites/foo/;\n}\n");
 }
 
 TEST_F(NginxConfigParserTest, EmptyConfig) {
@@ -29,6 +30,8 @@ TEST_F(NginxConfigParserTest, CommentConfig) {
   bool success = parser.Parse("comment_config", &out_config);
   
   EXPECT_TRUE(success);
+  EXPECT_EQ(out_config.ToString(), 
+    "server {\n  listen 80;\n  server_name foo.com;\n  root /home/ubuntu/sites/foo/;\n}\nsomething {\n  another thing;\n}\n");
 }
 
 TEST_F(NginxConfigParserTest, CommentOnlyConfig) {
@@ -59,12 +62,15 @@ TEST_F(NginxConfigParserTest, QuoteConfig) {
   bool success = parser.Parse("quote_config", &out_config);
 
   EXPECT_TRUE(success);
+  EXPECT_EQ(out_config.ToString(), "user \"hello\";\nfoo 'b';\nfoo \"you're cool!\";\ncomplex \"wowowo342424 !~!#; { } hello '\";\n");
 }
 
 TEST_F(NginxConfigParserTest, TokenConfig) {
   bool success = parser.Parse("token_config", &out_config);
 
   EXPECT_TRUE(success);
+  EXPECT_EQ(out_config.ToString(), 
+    "user hello;\npid /some/path/to/this.pid;\nprocesses 4;\ntype text/plain;\nsend_timeout 3m;\ninclude something/another.types;\n");
 }
 
 TEST_F(NginxConfigParserTest, NoTokenColConfig) {
@@ -107,6 +113,7 @@ TEST_F(NginxConfigParserTest, SpaceConfig) {
   bool success = parser.Parse("space_config", &out_config);
 
   EXPECT_TRUE(success);
+  EXPECT_EQ(out_config.ToString(), "food fruits;\nfood dairy;\nfood junk;\nfood rice;\nnoodles {\n  type/soup pho;\n  type/dry yakisoba;\n  type/soup beef noodle soup;\n  type/soup ramen;\n}\nlots of space \"yay\";\nwooo;\nspace;\n");
 }
 
 TEST_F(NginxConfigParserTest, NestedConfig) {
@@ -125,12 +132,14 @@ TEST_F(NginxConfigParserTest, MixedQuoteConfig) {
   bool success = parser.Parse("mixed_quote_config", &out_config);
 
   EXPECT_TRUE(success);
+  EXPECT_EQ(out_config.ToString(), "foo \"does this 'work'\";\nbar 'how about \"this\"';\ntool 'and ' how about this' yay';\n");
 }
 
 TEST_F(NginxConfigParserTest, ComboConfig) {
   bool success = parser.Parse("combo_config", &out_config);
 
   EXPECT_TRUE(success);
+  EXPECT_EQ(out_config.ToString(), "error_log logs/error.log;\npid logs/nginx.pid;\nworker_rlimit_nofile 8192;\nevents {\n  worker_connections 4096;\n}\nhttp {\n  include conf/mime.types;\n  include /etc/nginx/proxy.conf;\n  include /etc/nginx/fastcgi.conf;\n  index index.html index.htm index.php;\n  default_type application/octet-stream;\n  log_format main '$remote_addr - $remote_user [$time_local]  $status ' '\"$request\" $body_bytes_sent \"$http_referer\" ' '\"$http_user_agent\" \"$http_x_forwarded_for\"';\n  access_log logs/access.log main;\n  sendfile on;\n  tcp_nopush on;\n  server_names_hash_bucket_size 128;\n  server {\n    listen 80;\n    server_name domain1.com www.domain1.com;\n    access_log logs/domain1.access.log main;\n    root html;\n    location ~ \\.php$ {\n      fastcgi_pass 127.0.0.1:1025;\n    }\n  }\n}\n");
 }
 
 TEST_F(NginxConfigParserTest, EmptyBraceConfig) {
@@ -155,6 +164,18 @@ TEST_F(NginxConfigParserTest, PortConfig) {
   bool parse_config = parser.Parse("port_config", &out_config);
   bool parse_stmt = out_config.ParseStatements();
 
+  EXPECT_EQ(out_config.GetPort(), 80);
+  EXPECT_EQ(out_config.ToString(), "port 80;\n");
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+}
+
+TEST_F(NginxConfigParserTest, Port8080Config) {
+  bool parse_config = parser.Parse("port_8080_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_EQ(out_config.GetPort(), 8080);
+  EXPECT_EQ(out_config.ToString(), "port 8080;\n");
   EXPECT_TRUE(parse_config);
   EXPECT_TRUE(parse_stmt);
 }
