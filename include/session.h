@@ -8,7 +8,7 @@
 using boost::asio::ip::tcp;
 
 #define OK 200
-#define INVALID 200
+#define INVALID 400
 
 class session 
 {
