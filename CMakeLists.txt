@@ -74,7 +74,7 @@ add_test(NAME IntegrationTest.SimpleGet
     
 # Integration test for handling of invalid HTTP request
 add_test(NAME IntegrationTest.InvalidHTTP
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8081 -p 8081 -n -b blahblahblah -o Integration/invalid_http_output
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -n -b blahblahblah -o Integration/invalid_http_output
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # TODO(!): Update with target/test targets
