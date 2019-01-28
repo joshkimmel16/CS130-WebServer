@@ -15,7 +15,7 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "session.h"
-#include "response.h"
+// #include "response.h"
 
 using boost::asio::ip::tcp;
 
@@ -32,17 +32,19 @@ tcp::socket& session::socket ()
 //start executes an asynchronous read in which the server
 //waits on data from the requestor
 //TODO: is this actually what's happening here?
-void session::start() 
+bool session::start() 
 {
-     read();
+     return read();
 }
 
 
-void session::read(){
+bool session::read(){
      socket_.async_read_some(boost::asio::buffer(data_, max_length),
        boost::bind(&session::handle_read, this,
        boost::asio::placeholders::error,
        boost::asio::placeholders::bytes_transferred));
+
+     return true;
 }
 
 //handle_read is a callback for when the session reads data from the requestor
@@ -72,7 +74,7 @@ void session::handle_read(const boost::system::error_code& error,
     }
 }
 
-void session::write(request* req, const unsigned int status_code){
+bool session::write(request* req, const unsigned int status_code){
      response* resp = new response(status_code, std::string(req->get_raw_request()));
      resp->set_header("Content-Type", "text/plain");
      const char* hdr = resp->generate_response();
@@ -81,6 +83,8 @@ void session::write(request* req, const unsigned int status_code){
         boost::asio::buffer(hdr, std::strlen(hdr)),
         boost::bind(&session::handle_write, this,
         boost::asio::placeholders::error));
+
+     return true;
 }
 
 //handle_write is a callback for when the server writes data to the requestor
