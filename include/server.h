@@ -9,6 +9,8 @@ class server
 public:
   //Methods
   server(boost::asio::io_service& io_service, short port); //constructor
+  // bool start_accept(); //accept an incoming connection
+  bool get_status();
 private:
   //Methods
   void start_accept(); //accept an incoming connection
@@ -17,4 +19,5 @@ private:
   //Attributes
   boost::asio::io_service& io_service_;
   tcp::acceptor acceptor_;
+  bool isRunning = false;
 };

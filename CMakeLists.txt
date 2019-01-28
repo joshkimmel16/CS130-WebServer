@@ -56,8 +56,8 @@ add_executable(response_test tests/response_test.cc)
 target_link_libraries(response_test response gtest_main)
 add_executable(session_test tests/session_test.cc)
 target_link_libraries(session_test session request response gtest_main Boost::system)
-# add_executable(server_test tests/server_test.cc)
-# target_link_libraries(server_test server gtest_main)
+add_executable(server_test tests/server_test.cc)
+target_link_libraries(server_test server session request response config_parser gtest_main Boost::system)
 
 
 # TODO(!): Update with test binary
@@ -66,6 +66,7 @@ gtest_discover_tests(config_parser_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE
 gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Integration test for simple GET request with no body or extra headers
 add_test(NAME IntegrationTest.SimpleGet
@@ -81,4 +82,4 @@ add_test(NAME IntegrationTest.InvalidHTTP
 # include(cmake/CodeCoverageReportConfig.cmake)
 # generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server_main server session config_parser request response TESTS config_parser_test request_test response_test session_test)
+generate_coverage_report(TARGETS server_main server session config_parser request response TESTS config_parser_test request_test response_test session_test server_test)

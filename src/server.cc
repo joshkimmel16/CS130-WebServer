@@ -30,6 +30,12 @@ void server::start_accept()
     acceptor_.async_accept(new_session->socket(),
         boost::bind(&server::handle_accept, this, new_session,
           boost::asio::placeholders::error));
+
+    isRunning = true;
+}
+
+bool server::get_status() {
+  return isRunning;
 }
 
 //handle_accept is the callback executed when start_accept returns
