@@ -13,13 +13,14 @@ public:
   char* get_raw_request(); //write out a request as an HTTP string
   size_t get_request_size(); //retrieve the size of the raw request
   std::string get_method(); //retrieve the request method
+  std::string get_uri(); //retrieve the URI for the request
   std::string get_header(std::string name); //retrieve a request header by name
   std::string get_body(); //retrieve the request body
   bool is_valid(); //retrieve whether or not the request is valid for HTTP
 private:
   //Methods
   void parse_request(); //main request information extraction method
-  bool parse_method(std::string req); //extract method from raw
+  bool parse_status_line(std::string req); //extract status line info from raw
   bool parse_headers(std::string req); //extract headers from raw
   bool parse_body(std::string req); //extract body from raw
 
@@ -27,6 +28,7 @@ private:
   char* raw_request_;
   size_t request_size_;
   std::string method_;
+  std::string uri_;
   std::unordered_map<std::string, std::string> request_headers_;
   std::string request_body_;
   bool valid_;

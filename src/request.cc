@@ -40,6 +40,12 @@ std::string request::get_method ()
     return method_;
 }
 
+//get_uri returns the uri of the request as a string
+std::string request::get_uri () 
+{
+    return uri_;
+}
+
 //get_header returns the header value as a string corresponding to the provided header name
 std::string request::get_header (std::string name) 
 {
@@ -77,7 +83,7 @@ void request::parse_request ()
     }
     
     valid_ = false;
-    bool out1 = parse_method(req);
+    bool out1 = parse_status_line(req);
     if (out1)
     {
         bool out2 = parse_headers(req);
@@ -92,9 +98,8 @@ void request::parse_request ()
     }
 }
 
-//parse_method captures the HTTP method for the request
-//the method loops the raw request and outputs the offset corresponding to the end of the request line
-bool request::parse_method(std::string req)
+//parse_status_line captures the HTTP status line for the request
+bool request::parse_status_line(std::string req)
 {
     std::regex r("^(\\w+) (.+) HTTP\\/(\\d\\.\\d)\\\r\\\n");
     std::smatch m;
@@ -103,6 +108,7 @@ bool request::parse_method(std::string req)
     if (m.size() == 4) 
     {
         method_ = m.str(1);
+        uri_ = m.str(2);
         return true;
     }
     else
