@@ -61,11 +61,11 @@ void session::handle_read(const boost::system::error_code& error,
       //check request for validity
       if (req->is_valid())
       {
-	write(req, OK);
+	       write(req, OK);
       }
       else
       {
-	write(req, INVALID);
+	       write(req, INVALID);
       }
     }
     else 
@@ -83,6 +83,9 @@ bool session::write(request* req, const unsigned int status_code){
         boost::asio::buffer(hdr, std::strlen(hdr)),
         boost::bind(&session::handle_write, this,
         boost::asio::placeholders::error));
+    
+     delete req;
+     delete resp;
 
      return true;
 }
@@ -100,6 +103,8 @@ void session::handle_write(const boost::system::error_code& error)
       //    boost::asio::placeholders::bytes_transferred));
       socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_send);
       socket_.close();
+        
+      delete this;
     }
     else 
     {
