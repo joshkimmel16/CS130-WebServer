@@ -1,4 +1,6 @@
 //An HTTP Response
+#ifndef RESPONSE_H
+#define RESPONSE_H
 
 #include <cstdlib>
 #include <iostream>
@@ -29,4 +31,6 @@ private:
     std::string response_body_;
     std::string response_;
 };
+
+#endif
 

@@ -1,4 +1,6 @@
 //An HTTP Request
+#ifndef REQUEST_H
+#define REQUEST_H
 
 #include <cstdlib>
 #include <iostream>
@@ -33,3 +35,5 @@ private:
   std::string request_body_;
   bool valid_;
 };
+
+#endif

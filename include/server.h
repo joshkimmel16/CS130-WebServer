@@ -1,4 +1,7 @@
 // A TCP web server
+#ifndef SERVER_H
+#define SERVER_H
+
 #include "session.h"
 #include "config_parser.h"
 
@@ -21,3 +24,5 @@ private:
   tcp::acceptor acceptor_;
   bool isRunning = false;
 };
+
+#endif

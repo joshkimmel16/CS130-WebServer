@@ -1,4 +1,7 @@
 // A TCP session
+#ifndef SESSION_H
+#define SESSION_H
+
 #include <cstdlib>
 #include <iostream>
 #include <boost/bind.hpp>
@@ -32,3 +35,5 @@ private:
   enum { max_length = 1024 };
   char data_[max_length]; 
 };
+
+#endif
