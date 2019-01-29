@@ -2,7 +2,17 @@
 
 #function to print proper usage for the bash script
 print_usage() {
-  STR=$'Valid commands are:\n-h Help.\n-c Path to server config file. Default is: "Integration/integration_config".\n-n Use netcat (nc) instead of cURL\n-p Port that the web server will run on. Default is: 8080.\n-m Request method (cURL only). Default is: "GET"\n-d Header for the request (cURL only). This option can be used multiple times (per header to be added).\n-b Request body (cURL) OR entire request (netcat). Empty by default.\n-o Path to a file containing the expected response for the given test. Default is: Integration/expected_output.'
+  STR=$'Valid commands are: 
+  -h Help. 
+  -c Path to server config file. Default is: "Integration/integration_config". 
+  -n Use netcat (nc) instead of cURL 
+  -p Port that the web server will run on. Default is: 8080. 
+  -t Host that the request should be made to. Default is: localhost. 
+  -u URI of the request (cURL only). / by default. 
+  -m Request method (cURL only). Default is: "GET" 
+  -d Header for the request (cURL only). This option can be used multiple times (per header to be added). 
+  -b Request body (cURL) OR entire request (netcat). Empty by default. 
+  -o Path to a file containing the expected response for the given test. Default is: Integration/expected_output.'
   echo "$STR"
   exit 1
 }
@@ -23,14 +33,14 @@ create_curl_request() {
     create_header_string
     if [ ! -z "$REQ_BODY" ]
     then
-        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} --data \"${REQ_BODY}\" http://localhost:${SERVER_PORT}"
+        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} --data \"${REQ_BODY}\" http://${REQ_HOST}:${SERVER_PORT}${REQ_URI}"
     else
-        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} http://localhost:${SERVER_PORT}"
+        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} http://${REQ_HOST}:${SERVER_PORT}${REQ_URI}"
     fi
 }
 
 create_nc_request() {
-    REQ_COMMAND="nc localhost ${SERVER_PORT}"
+    REQ_COMMAND="nc ${REQ_HOST} ${SERVER_PORT}"
 }
 
 #variable declarations with default values
@@ -40,7 +50,8 @@ USE_NETCAT="0"
 
 REQ_COMMAND=""
 
-REQ_COMMAND=""
+REQ_HOST="localhost"
+REQ_URI=
 REQ_METHOD="GET"
 REQ_HEADERS=
 REQ_HEADER_STRING=""
@@ -53,7 +64,7 @@ SERVER_PORT="8080"
 EXPECTED_OUTPUT="Integration/expected_output"
 
 #capture arguments to the script
-while getopts "hc:np:m:d:b:o:" opt; do
+while getopts "hc:np:t:u:m:d:b:o:" opt; do
   case $opt in
     h)
       print_usage
@@ -66,6 +77,12 @@ while getopts "hc:np:m:d:b:o:" opt; do
       ;;
     p)
       SERVER_PORT=$OPTARG
+      ;;
+    t)
+      REQ_HOST=$OPTARG
+      ;;
+    u)
+      REQ_URI=$OPTARG
       ;;
     m)
       REQ_METHOD=$OPTARG
