@@ -47,6 +47,9 @@ add_library(session src/session.cc)
 add_library(config_parser src/config_parser.cc)
 add_library(request src/request.cc)
 add_library(response src/response.cc)
+add_library(echo_handler src/echo_handler.cc)
+add_library(default_handler src/default_handler.cc)
+add_library(router src/router.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
@@ -68,6 +71,13 @@ add_executable(session_test tests/session_test.cc)
 target_link_libraries(session_test session request response gtest_main Boost::system)
 add_executable(server_test tests/server_test.cc)
 target_link_libraries(server_test server session request response config_parser gtest_main Boost::system)
+add_executable(echo_handler_test tests/echo_handler_test.cc)
+target_link_libraries(echo_handler_test echo_handler request response config_parser gtest_main)
+add_executable(default_handler_test tests/default_handler_test.cc)
+target_link_libraries(default_handler_test default_handler request response config_parser gtest_main)
+add_executable(router_test tests/router_test.cc)
+target_link_libraries(router_test router echo_handler default_handler request response config_parser gtest_main)
+
 
 
 # TODO(!): Update with test binary
@@ -77,6 +87,9 @@ gtest_discover_tests(request_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
 gtest_discover_tests(response_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(session_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(default_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(router_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Integration test for simple GET request with no body or extra headers
 add_test(NAME IntegrationTest.SimpleGet
