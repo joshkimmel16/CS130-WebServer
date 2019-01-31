@@ -7,39 +7,50 @@
 #include "gmock/gmock.h"
 #include "session.h"
 
+class MockIO : public boost::asio::io_service {
+};
+
 class SessionTest : public ::testing::Test {
   protected:
     char* r;
     size_t r_size;
-};
-
-class MockIO : public boost::asio::io_service {
+    MockIO service;
 };
 
 TEST_F(SessionTest, CallStart) {
-	MockIO service;
 	session* sess = new session(service);
 	EXPECT_TRUE(sess->start());
 }
 
 TEST_F(SessionTest, CallRead) {
-	MockIO service;
 	session* sess = new session(service);
 	EXPECT_TRUE(sess->read());
 }
 
 TEST_F(SessionTest, CallWrite) {
-	MockIO service;
 	session* sess = new session(service);
-	int status_code = 400;
-  	std::string input = "GET /test HTTP/1.1\r\n\r\n";
-	int n = input.length();    
-	char char_array[n+1];   
-	strcpy(char_array, input.c_str());
-	r = char_array;
-	r_size = std::strlen(char_array);
+    std::string tmp = "hello";
+	EXPECT_TRUE(sess->write(tmp.c_str()));
+}
 
-	request* req = new request(r, r_size);
 
-	EXPECT_TRUE(sess->write(req, status_code));
+TEST_F(SessionTest, HandleSuccessValid) {
+	session* sess = new session(service);
+    sess->set_data("GET /test HTTP/1.1\r\n\r\n");
+    size_t bytes_transferred = 30;
+	EXPECT_TRUE(sess->handle_success(bytes_transferred));
+}
+
+TEST_F(SessionTest, HandleSuccessInValid) {
+	session* sess = new session(service);
+    sess->set_data("blahblahblah");
+    size_t bytes_transferred = 12;
+	EXPECT_FALSE(sess->handle_success(bytes_transferred));
+}
+
+TEST_F(SessionTest, HandleError) {
+	session* sess = new session(service);
+    const boost::system::error_code error;
+        
+	EXPECT_TRUE(sess->handle_error(error));
 }

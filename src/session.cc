@@ -15,7 +15,6 @@
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 #include "session.h"
-// #include "response.h"
 
 using boost::asio::ip::tcp;
 
@@ -29,16 +28,27 @@ tcp::socket& session::socket ()
     return socket_;
 }
 
+//this method should be used for testing purposes only!
+//pushes the input string into data_
+bool session::set_data (std::string d)
+{
+    for (int i=0; i<d.length(); i++)
+    {
+        data_[i] = d[i];
+    }
+    return true;
+}
+
 //start executes an asynchronous read in which the server
 //waits on data from the requestor
-//TODO: is this actually what's happening here?
 bool session::start() 
 {
      return read();
 }
 
-
-bool session::read(){
+//async read off of the socket
+bool session::read()
+{
      socket_.async_read_some(boost::asio::buffer(data_, max_length),
        boost::bind(&session::handle_read, this,
        boost::asio::placeholders::error,
@@ -47,67 +57,107 @@ bool session::read(){
      return true;
 }
 
+//async write onto the socket
+bool session::write(const char* data)
+{
+    boost::asio::async_write(socket_,
+        boost::asio::buffer(data, std::strlen(data)),
+        boost::bind(&session::handle_write, this,
+        boost::asio::placeholders::error));
+    
+    return true;
+}
+
+//close the given session
+bool session::close()
+{
+    socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_send);
+    socket_.close();
+        
+    delete this;
+}
+
+//public handler for successful reads off of the socket
+bool session::handle_success(size_t bytes_transferred)
+{
+    //parse raw request to a request object
+    char* d = data_;
+    request* req = new request(d, bytes_transferred);
+    
+    //check request for validity
+    if (req->is_valid())
+    {
+	   handle_valid_request(req);
+       return true;
+    }
+    else
+    {
+	   handle_invalid_request(req);
+       return false;
+    }
+}
+
+//public handler for unsuccessful reads off of the socket
+bool session::handle_error(const boost::system::error_code& error)
+{
+    response* resp = new response(500, "Oops! Looks like something went wrong on our side. Please try again later.");
+    resp->set_header("Content-Type", "text/plain");
+    
+    write(resp->generate_response());
+    delete resp;
+    return true;
+}
+
+
 //handle_read is a callback for when the session reads data from the requestor
-//TODO: presumably this is where the "echoing" happens
 void session::handle_read(const boost::system::error_code& error,
   size_t bytes_transferred) 
 {
     if (!error) 
     { 
-      //parse raw request to a request object
-      char* d = data_;
-      request* req = new request(d, bytes_transferred);
-      
-      //check request for validity
-      if (req->is_valid())
-      {
-	       write(req, OK);
-      }
-      else
-      {
-	       write(req, INVALID);
-      }
+      handle_success(bytes_transferred);
     }
     else 
     {
-      delete this;
+      handle_error(error);
     }
 }
 
-bool session::write(request* req, const unsigned int status_code){
-     response* resp = new response(status_code, std::string(req->get_raw_request()));
-     resp->set_header("Content-Type", "text/plain");
-     const char* hdr = resp->generate_response();
 
-     boost::asio::async_write(socket_,
-        boost::asio::buffer(hdr, std::strlen(hdr)),
-        boost::bind(&session::handle_write, this,
-        boost::asio::placeholders::error));
-    
-     delete req;
-     delete resp;
-
-     return true;
-}
 
 //handle_write is a callback for when the server writes data to the requestor
-//re-execute the same method from start()
-//TODO: not sure if we need to modify this right now...
 void session::handle_write(const boost::system::error_code& error) 
 {
     if (!error) 
     {
-      // socket_.async_read_some(boost::asio::buffer(data_, max_length),
-      //    boost::bind(&session::handle_read, this,
-      //    boost::asio::placeholders::error,
-      //    boost::asio::placeholders::bytes_transferred));
-      socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_send);
-      socket_.close();
-        
-      delete this;
+      close();
     }
     else 
     {
       delete this;
     }
+}
+
+//echo the valid request back
+bool session::handle_valid_request(request* req)
+{
+    response* resp = new response(200, std::string(req->get_raw_request()));
+    resp->set_header("Content-Type", "text/plain");
+    
+    write(resp->generate_response());
+    delete resp;
+    delete req;
+    return true;
+}
+
+//echo the invalid request back
+bool session::handle_invalid_request(request* req)
+{
+    response* resp = new response(400, std::string(req->get_raw_request()));
+    resp->set_header("Content-Type", "text/plain");
+    
+    write(resp->generate_response());
+    delete resp;
+    delete req;
+    return true;
 }

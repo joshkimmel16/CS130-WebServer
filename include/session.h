@@ -11,24 +11,25 @@
 
 using boost::asio::ip::tcp;
 
-#define OK 200
-#define INVALID 400
-
 class session 
 {
 public:
   //Methods
   session(boost::asio::io_service& io_service); //constructor
   tcp::socket& socket(); //get underlying socket object
-  bool start(); //start a session
-  bool read();
-  bool write(request* req, const unsigned int status_code);
+  bool set_data (std::string d); //method to set data explicitly
+  bool start(); //start a session by opening a socket
+  bool read(); //read off of the socket
+  bool write(const char* data); //write on the socket
+  bool close(); //close the socket
+  bool handle_success(size_t bytes_transferred); //handler for successful reads on the socket
+  bool handle_error(const boost::system::error_code& error); //handler for errors while reading on the socket
 private:
   //Methods
   void handle_read(const boost::system::error_code& error, size_t bytes_transferred); //handle async reads
   void handle_write(const boost::system::error_code& error); //handle async writes
-  // void read();
-  // void write(request* req, const unsigned int status_code);
+  bool handle_valid_request(request* req); //handler for valid requests
+  bool handle_invalid_request(request* req); //handler for invalid requests
 
   //Attributes
   tcp::socket socket_;
