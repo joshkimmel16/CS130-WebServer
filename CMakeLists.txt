@@ -32,6 +32,13 @@ set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.50 REQUIRED COMPONENTS system)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
+#Enable Boost Log
+find_package(Boost 1.54.0 REQUIRED COMPONENTS log_setup log)
+
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+
+
 include_directories(include)
 
 # TODO(!): Update name and srcs
@@ -43,7 +50,10 @@ add_library(response src/response.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
-target_link_libraries(server_main server session config_parser request response Boost::system)
+target_link_libraries(server_main server session config_parser request response Boost::system ${Boost_LIBRARIES})
+#ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
+#include_directories(${Boost_INCLUDE_DIRS})
+#TARGET_LINK_LIBRARIES(server_main ${Boost_LIBRARIES})
 
 # TODO(!): Update test executable name, srcs, and deps
 # add_executable(example_lib_test tests/example_lib_test.cc)
