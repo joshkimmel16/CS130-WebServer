@@ -105,4 +105,4 @@ add_test(NAME IntegrationTest.InvalidHTTP
 # include(cmake/CodeCoverageReportConfig.cmake)
 # generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server_main server session config_parser request response TESTS config_parser_test request_test response_test session_test server_test)
+generate_coverage_report(TARGETS server_main server session config_parser request response router echo_handler default_handler TESTS config_parser_test request_test response_test session_test server_test router_test echo_handler_test default_handler_test)
