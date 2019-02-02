@@ -50,10 +50,11 @@ add_library(response src/response.cc)
 add_library(echo_handler src/echo_handler.cc)
 add_library(default_handler src/default_handler.cc)
 add_library(router src/router.cc)
+add_library(logger src/logger.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
-target_link_libraries(server_main server session config_parser request response Boost::system ${Boost_LIBRARIES})
+target_link_libraries(server_main server session config_parser request response logger Boost::system ${Boost_LIBRARIES})
 #ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 #include_directories(${Boost_INCLUDE_DIRS})
 #TARGET_LINK_LIBRARIES(server_main ${Boost_LIBRARIES})
@@ -105,4 +106,4 @@ add_test(NAME IntegrationTest.InvalidHTTP
 # include(cmake/CodeCoverageReportConfig.cmake)
 # generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server_main server session config_parser request response router echo_handler default_handler TESTS config_parser_test request_test response_test session_test server_test router_test echo_handler_test default_handler_test)
+generate_coverage_report(TARGETS server_main server session config_parser request response router echo_handler default_handler logger TESTS config_parser_test request_test response_test session_test server_test router_test echo_handler_test default_handler_test)

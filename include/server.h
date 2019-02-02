@@ -4,6 +4,7 @@
 
 #include "session.h"
 #include "config_parser.h"
+#include "logger.h"
 
 using boost::asio::ip::tcp;
 
