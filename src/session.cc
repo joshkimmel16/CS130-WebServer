@@ -19,8 +19,8 @@
 using boost::asio::ip::tcp;
 
 //constructor takes a Boost io_service object
-session::session(boost::asio::io_service& io_service)
-: socket_(io_service) {}
+session::session(boost::asio::io_service& io_service, std::shared_ptr<router> rout)
+: socket_(io_service), router_(rout) {}
 
 //socket returns the underlying socket object for this session
 tcp::socket& session::socket () 
@@ -141,8 +141,7 @@ void session::handle_write(const boost::system::error_code& error)
 //echo the valid request back
 bool session::handle_valid_request(request* req)
 {
-    response* resp = new response(200, std::string(req->get_raw_request()));
-    resp->set_header("Content-Type", "text/plain");
+    response* resp = router_->route_request(req);
     
     write(resp->generate_response());
     delete resp;

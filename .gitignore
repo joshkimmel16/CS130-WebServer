@@ -4,4 +4,4 @@ build
 build_*
 mirror
 temp
-.log
+*.log

@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 #include "request.h"
 #include "response.h"
+#include "router.h"
 
 using boost::asio::ip::tcp;
 
@@ -15,7 +16,7 @@ class session
 {
 public:
   //Methods
-  session(boost::asio::io_service& io_service); //constructor
+  session(boost::asio::io_service& io_service, std::shared_ptr<router> rout); //constructor
   tcp::socket& socket(); //get underlying socket object
   bool set_data (std::string d); //method to set data explicitly
   bool start(); //start a session by opening a socket
@@ -34,7 +35,8 @@ private:
   //Attributes
   tcp::socket socket_;
   enum { max_length = 1024 };
-  char data_[max_length]; 
+  char data_[max_length];
+  std::shared_ptr<router> router_;
 };
 
 #endif

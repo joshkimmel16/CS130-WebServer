@@ -54,7 +54,7 @@ add_library(logger src/logger.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
-target_link_libraries(server_main server session config_parser request response logger Boost::system ${Boost_LIBRARIES})
+target_link_libraries(server_main server session config_parser request response logger router echo_handler default_handler Boost::system ${Boost_LIBRARIES})
 #ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 #include_directories(${Boost_INCLUDE_DIRS})
 #TARGET_LINK_LIBRARIES(server_main ${Boost_LIBRARIES})
@@ -69,9 +69,9 @@ target_link_libraries(request_test request gtest_main)
 add_executable(response_test tests/response_test.cc)
 target_link_libraries(response_test response gtest_main)
 add_executable(session_test tests/session_test.cc)
-target_link_libraries(session_test session request response gtest_main Boost::system)
+target_link_libraries(session_test session request response config_parser router echo_handler default_handler gtest_main Boost::system)
 add_executable(server_test tests/server_test.cc)
-target_link_libraries(server_test server session request response config_parser gtest_main Boost::system)
+target_link_libraries(server_test server session request response config_parser router echo_handler default_handler gtest_main Boost::system)
 add_executable(echo_handler_test tests/echo_handler_test.cc)
 target_link_libraries(echo_handler_test echo_handler request response config_parser gtest_main)
 add_executable(default_handler_test tests/default_handler_test.cc)
@@ -94,7 +94,7 @@ gtest_discover_tests(router_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 
 # Integration test for simple GET request with no body or extra headers
 add_test(NAME IntegrationTest.SimpleGet
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -m GET -o Integration/simple_get_output
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -m GET -u /echo -o Integration/simple_get_output
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
     
 # Integration test for handling of invalid HTTP request

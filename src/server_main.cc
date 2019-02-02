@@ -39,10 +39,25 @@ int main(int argc, char* argv[])
       return 1;
     } 
     int port = config.GetPort();
-    
     boost::asio::io_service io_service;
 
-    server s(io_service, port);
+    std::unique_ptr<server> serv(new server(io_service, config, port));
+    bool r = serv->create_router();
+    if (r)
+    {
+        serv->register_route("/echo", "echo");
+        //TODO: register static file serving route
+        
+        bool start = serv->start_accept();
+        if (!start)
+        {
+            throw std::runtime_error("Could not start the server! Please ensure that the router was properly initialized.");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Could not create router! Please ensure that the config file has a router config in it.");
+    }
 
     io_service.run();
     BOOST_LOG_TRIVIAL(info) << "server runs successfullly";
@@ -50,6 +65,7 @@ int main(int argc, char* argv[])
   catch (std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << "\n";
+    BOOST_LOG_TRIVIAL(error);
   }
 
   return 0;
