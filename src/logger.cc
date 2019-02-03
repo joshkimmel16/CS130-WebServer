@@ -2,17 +2,45 @@
 
 #include "logger.h"
 
-logger::logger() {
+Logger::Logger()
+{
   init_log();
 }
 
-//Code from :
-//https://blog.scalyr.com/2018/07/getting-started-quickly-c-logging/
-//
-//init_log is for testing only (for boost log and output file)
-void logger::init_log()
+Logger::~Logger()
 {
-  static const std::string COMMON_FMT("[%TimeStamp%][%Severity%]:  %Message%");
+}
+
+void Logger::logTrace(std::string message)
+{
+  BOOST_LOG_TRIVIAL(trace) << message;
+}
+
+void Logger::logInfo(std::string message)
+{
+  BOOST_LOG_TRIVIAL(info) << message;
+}
+void Logger::logWarning(std::string message)
+{
+  BOOST_LOG_TRIVIAL(warning) << message;
+}
+void Logger::logError(std::string message)
+{
+  BOOST_LOG_TRIVIAL(error) << message;
+}
+void Logger::logFatal(std::string message)
+{
+  BOOST_LOG_TRIVIAL(fatal) << message;
+}
+void Logger::logDebug(std::string message)
+{
+  BOOST_LOG_TRIVIAL(debug) << message;
+}
+
+
+void Logger::init_log()
+{
+  static const std::string COMMON_FMT("[%TimeStamp%][%ThreadID%][%Severity%]:  %Message%");
   boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity");
   boost::log::add_console_log
   (
@@ -23,20 +51,14 @@ void logger::init_log()
 
 
   boost::log::add_file_log (
-      boost::log::keywords::file_name = "sample_%3N.log",
-      boost::log::keywords::rotation_size = 1 * 1024 * 1024,
-      boost::log::keywords::max_size = 20 * 1024 * 1024,
+      boost::log::keywords::file_name = "server_log_%m%d%Y_%H%M%S_%5N.log",
+      //rotate files every 10 Mb
+      boost::log::keywords::rotation_size = 10000000,
+      //rotate every midnight
       boost::log::keywords::time_based_rotation = boost::log::sinks::file::rotation_at_time_point(0, 0, 0),
       boost::log::keywords::format = COMMON_FMT,
       boost::log::keywords::auto_flush = true
   );
 
   boost::log::add_common_attributes();
-
-#ifndef _DEBUG
-  boost::log::core::get()->set_filter(
-      boost::log::trivial::severity >= boost::log::trivial::info
-  );
-#endif
-
 }

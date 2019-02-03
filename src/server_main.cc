@@ -16,17 +16,15 @@ using boost::asio::ip::tcp;
 int main(int argc, char* argv[]) 
 {
   //testing to see Boost log works///////////////////////////////
-  logger l();
-  BOOST_LOG_TRIVIAL(trace) << "A trace severity message";
-  BOOST_LOG_TRIVIAL(debug) << "A debug severity message";
-  BOOST_LOG_TRIVIAL(info) << "An informational severity message";
-  ///////////////////////////////////////////////////////////////
+  Logger logs;
+  logs.logInfo("server_main has been entered...");
+
   try
   {
     if (argc != 2)
     {
       std::cerr << "Usage: async_tcp_echo_server <path to config file>\n";
-      BOOST_LOG_TRIVIAL(error);
+      logs.logFatal("Invalid number of arguments...");
       return 1;
     }
 
@@ -34,10 +32,13 @@ int main(int argc, char* argv[])
     NginxConfigParser config_parser;
     NginxConfig config;
     config_parser.Parse(argv[1], &config);
-
+    
     if (!config.ParseStatements()) {
-      return 1;
+	logs.logFatal("parse failure...");
+      	return 1;
     } 
+    logs.logInfo("parse succeed...");
+
     int port = config.GetPort();
     boost::asio::io_service io_service;
 
@@ -65,7 +66,7 @@ int main(int argc, char* argv[])
   catch (std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << "\n";
-    BOOST_LOG_TRIVIAL(error);
+    logs.logError("caught exception object by reference...");
   }
 
   return 0;
