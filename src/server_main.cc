@@ -47,7 +47,8 @@ int main(int argc, char* argv[])
     if (r)
     {
         serv->register_route("/echo", "echo");
-        //TODO: register static file serving route
+        serv->register_route("/static1/.*", "static1");
+        serv->register_route("/static2/.*", "static2");
         
         bool start = serv->start_accept();
         if (!start)

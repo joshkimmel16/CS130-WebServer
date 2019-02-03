@@ -1,6 +1,9 @@
 port 80;
 router {
-    static {
-        path "images";
+    static1 {
+        path "SOMEPATH";
+    }
+    static2 {
+        path "SOMEPATH";
     }
 }

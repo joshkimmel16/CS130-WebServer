@@ -67,7 +67,30 @@ TEST_F(RouterTest, Echo) {
   delete res;
 }
 
-//test echo route
+//test static route
+TEST_F(RouterTest, Static) {
+  router* out = new router(config);
+  out->register_route("/static1/.*", "static1");
+  out->register_default_header("User-Agent", "testing");
+  
+  std::string input = "GET /static1/image.jpg HTTP/1.1\r\n\r\n";
+  int n = input.length();    
+  char char_array[n+1];   
+  strcpy(char_array, input.c_str());
+  r = char_array;
+  r_size = std::strlen(char_array);
+  req = new request(r, r_size);
+  
+  res = out->route_request(req);
+  EXPECT_EQ(res->get_status_code(), 200); //should have a 200 status code
+  EXPECT_EQ(res->get_header("User-Agent"), "testing"); //default header should be registered appropriately
+    
+  delete out;
+  delete req;
+  delete res;
+}
+
+//test default handling
 TEST_F(RouterTest, Default) {
   router* out = new router(config);
   out->register_route("/echo", "echo");

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "router.h"
 #include "echo_handler.h"
+#include "static_file_handler.h"
 #include "default_handler.h"
 
 //constructor takes a config
@@ -87,7 +88,6 @@ std::string router::get_header (std::string name)
 }
 
 //get a nested config from the master config for a specific route handler
-//TODO: figure out how to pass the config
 std::shared_ptr<NginxConfig> router::get_handler_config (std::string handler_name)
 {
     std::shared_ptr<NginxConfig> output;
@@ -117,16 +117,29 @@ bool router::apply_default_headers (response* res)
 }
 
 //return the appropriate route_handler given the provided URI 
-//TODO: add handler for static files once implemented
-//TODO: this doesn't handle query strings in the URI well
+//TODO: this is a little clunky right now...
 route_handler* router::select_handler (std::string uri)
 {
-    if (uri == "/echo")
+    for (std::pair<std::string, std::string> mapping : route_map_)
     {
-        return new echo_handler(get_handler_config("echo"));
+	   std::string key = mapping.first;
+       bool test = std::regex_match(uri, std::regex(key));
+       if (test)
+       {
+           if (mapping.second == "echo")
+           {
+               return new echo_handler(get_handler_config("echo"));
+           }
+           else if (mapping.second == "static1")
+           {
+               return new static_file_handler(get_handler_config("static1"));
+           }
+           else if (mapping.second == "static2")
+           {
+               return new static_file_handler(get_handler_config("static2"));
+           }
+       }
     }
-    else
-    {
-        return new default_handler(get_handler_config("default"));
-    }
+    
+    return new default_handler(get_handler_config("default"));
 }
