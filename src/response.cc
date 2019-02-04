@@ -42,10 +42,7 @@ std::string response::get_body ()
 //set the status code
 void response::set_status_code (unsigned int sc)
 {
-    if(sc == 200 || sc == 400)
-    {
-    	status_code_ = sc;
-    }
+    status_code_ = sc;
 }
 
 //set a specific header

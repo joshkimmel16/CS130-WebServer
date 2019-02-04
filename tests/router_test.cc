@@ -73,7 +73,7 @@ TEST_F(RouterTest, Static) {
   out->register_route("/static1/.*", "static1");
   out->register_default_header("User-Agent", "testing");
   
-  std::string input = "GET /static1/image.jpg HTTP/1.1\r\n\r\n";
+  std::string input = "GET /static1/text.txt HTTP/1.1\r\n\r\n";
   int n = input.length();    
   char char_array[n+1];   
   strcpy(char_array, input.c_str());

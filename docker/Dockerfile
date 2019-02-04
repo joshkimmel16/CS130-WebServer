@@ -15,6 +15,7 @@ FROM ubuntu:latest as deploy
 # TODO(!): Copy server output binary to "."
 COPY --from=builder /usr/src/project/build/bin/server_main .
 COPY --from=builder /usr/src/project/conf/port_config .
+COPY --from=builder /usr/src/project/resources ./resources
 
 # TODO(!): Expose some port(s)
 EXPOSE 80

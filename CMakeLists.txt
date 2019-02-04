@@ -104,6 +104,18 @@ add_test(NAME IntegrationTest.SimpleGet
 add_test(NAME IntegrationTest.InvalidHTTP
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -n -b blahblahblah -o Integration/invalid_http_output
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    
+# Integration test for static1 route
+add_test(NAME IntegrationTest.Static1
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -m GET -u /static1/mytext.txt -o Integration/static1_text
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    
+# Integration test for static2 route
+add_test(NAME IntegrationTest.Static2
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -m GET -u /static2/mytext.txt -o Integration/static2_text
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    
+
 
 # TODO(!): Update with target/test targets
 # include(cmake/CodeCoverageReportConfig.cmake)

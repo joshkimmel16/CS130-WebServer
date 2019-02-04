@@ -42,18 +42,12 @@ TEST_F(ResponseTest, ResponseCheckBody){
 TEST_F(ResponseTest, ResponseCheckStatusCode){
   status_code = 200;
   body = "";
-  response* resp = new response(status_code,body);
+  response* resp = new response(status_code, body);
 
   EXPECT_EQ(resp->get_status_code(), status_code);
-
   resp->set_status_code(400);
   EXPECT_EQ(resp->get_status_code(), 400);
-
-  resp->set_status_code(401);
-  EXPECT_NE(resp->get_status_code(), 401);
 }
-
-
 
 // HTTP response to empty HTTP request
 TEST_F(ResponseTest, ResponseToNoBody) {
@@ -104,4 +98,3 @@ TEST_F(ResponseTest, ResponseWithBadBody) {
   EXPECT_EQ(resp->get_body(), body);
   EXPECT_EQ(std::string(resp->generate_response()), output);
 }
-
