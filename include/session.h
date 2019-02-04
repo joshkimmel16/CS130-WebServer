@@ -9,6 +9,7 @@
 #include "request.h"
 #include "response.h"
 #include "router.h"
+#include "logger.h"
 
 using boost::asio::ip::tcp;
 

@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     curl \
     netcat \
+    libboost-regex-dev \
     libboost-log-dev \
     libboost-signals-dev \
     libboost-system-dev \

@@ -1,0 +1,9 @@
+port 8083;
+router {
+    static1 {
+        path "SOMEPATH";
+    }
+    static2 {
+        path "SOMEPATH";
+    }
+}

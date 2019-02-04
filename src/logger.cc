@@ -2,44 +2,9 @@
 
 #include "logger.h"
 
-Logger::Logger()
+BOOST_LOG_GLOBAL_LOGGER_INIT(logger, boost::log::sources::severity_logger_mt)
 {
-  init_log();
-}
-
-Logger::~Logger()
-{
-}
-
-void Logger::logTrace(std::string message)
-{
-  BOOST_LOG_TRIVIAL(trace) << message;
-}
-
-void Logger::logInfo(std::string message)
-{
-  BOOST_LOG_TRIVIAL(info) << message;
-}
-void Logger::logWarning(std::string message)
-{
-  BOOST_LOG_TRIVIAL(warning) << message;
-}
-void Logger::logError(std::string message)
-{
-  BOOST_LOG_TRIVIAL(error) << message;
-}
-void Logger::logFatal(std::string message)
-{
-  BOOST_LOG_TRIVIAL(fatal) << message;
-}
-void Logger::logDebug(std::string message)
-{
-  BOOST_LOG_TRIVIAL(debug) << message;
-}
-
-
-void Logger::init_log()
-{
+  boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level> logger;
   static const std::string COMMON_FMT("[%TimeStamp%][%ThreadID%][%Severity%]:  %Message%");
   boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity");
   boost::log::add_console_log
@@ -61,4 +26,5 @@ void Logger::init_log()
   );
 
   boost::log::add_common_attributes();
+  return logger;
 }

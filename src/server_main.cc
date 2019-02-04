@@ -16,15 +16,17 @@ using boost::asio::ip::tcp;
 int main(int argc, char* argv[]) 
 {
   //testing to see Boost log works///////////////////////////////
-  Logger logs;
-  logs.logInfo("server_main has been entered...");
+  // Logger logs;
+  // logs.logInfo("server_main has been entered...");
+  LOG_INFO << "server_main has been entered..";
 
   try
   {
     if (argc != 2)
     {
       std::cerr << "Usage: async_tcp_echo_server <path to config file>\n";
-      logs.logFatal("Invalid number of arguments...");
+      // logs.logFatal("Invalid number of arguments...");
+      LOG_FATAL << "Invalid number of arguments.";
       return 1;
     }
 
@@ -34,10 +36,12 @@ int main(int argc, char* argv[])
     config_parser.Parse(argv[1], &config);
     
     if (!config.ParseStatements()) {
-	logs.logFatal("parse failure...");
-      	return 1;
+	    // logs.logFatal("parse failure...");
+      LOG_FATAL << "Parse failure.";
+      return 1;
     } 
-    logs.logInfo("parse succeed...");
+    // logs.logInfo("parse succeed...");
+    LOG_INFO << "Parse success.";
 
     int port = config.GetPort();
     boost::asio::io_service io_service;
@@ -62,12 +66,13 @@ int main(int argc, char* argv[])
     }
 
     io_service.run();
-    BOOST_LOG_TRIVIAL(info) << "server runs successfullly";
+    LOG_INFO << "server runs successfullly";
   }
   catch (std::exception& e)
   {
     std::cerr << "Exception: " << e.what() << "\n";
-    logs.logError("caught exception object by reference...");
+    // logs.logError("caught exception object by reference...");
+    LOG_INFO << "Exception: " << e.what();
   }
 
   return 0;

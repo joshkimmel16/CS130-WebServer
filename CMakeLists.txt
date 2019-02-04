@@ -38,7 +38,6 @@ find_package(Boost 1.54.0 REQUIRED COMPONENTS log_setup log)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
-
 include_directories(include)
 
 # TODO(!): Update name and srcs
@@ -55,7 +54,7 @@ add_library(logger src/logger.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
-target_link_libraries(server_main server session config_parser request response logger router echo_handler static_file_handler default_handler Boost::system ${Boost_LIBRARIES})
+target_link_libraries(server_main server session config_parser request response logger router echo_handler static_file_handler default_handler Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 #ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 #include_directories(${Boost_INCLUDE_DIRS})
 #TARGET_LINK_LIBRARIES(server_main ${Boost_LIBRARIES})
@@ -70,9 +69,9 @@ target_link_libraries(request_test request gtest_main)
 add_executable(response_test tests/response_test.cc)
 target_link_libraries(response_test response gtest_main)
 add_executable(session_test tests/session_test.cc)
-target_link_libraries(session_test session request response config_parser router echo_handler static_file_handler default_handler gtest_main Boost::system)
+target_link_libraries(session_test session request response config_parser logger router echo_handler static_file_handler default_handler gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 add_executable(server_test tests/server_test.cc)
-target_link_libraries(server_test server session request response config_parser router echo_handler static_file_handler default_handler gtest_main Boost::system)
+target_link_libraries(server_test server session request response config_parser logger router echo_handler static_file_handler default_handler gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 add_executable(echo_handler_test tests/echo_handler_test.cc)
 target_link_libraries(echo_handler_test echo_handler request response config_parser gtest_main)
 add_executable(static_file_handler_test tests/static_file_handler_test.cc)

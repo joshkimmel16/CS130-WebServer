@@ -82,6 +82,7 @@ bool session::handle_success(size_t bytes_transferred)
 {
     //parse raw request to a request object
     char* d = data_;
+    LOG_INFO << std::string(d);
     request* req = new request(d, bytes_transferred);
     
     //check request for validity
@@ -104,6 +105,7 @@ bool session::handle_error(const boost::system::error_code& error)
     resp->set_header("Content-Type", "text/plain");
     
     write(resp->generate_response());
+    LOG_ERROR << std::string(resp->generate_response());
     delete resp;
     return true;
 }
@@ -144,6 +146,7 @@ bool session::handle_valid_request(request* req)
     response* resp = router_->route_request(req);
     
     write(resp->generate_response());
+    LOG_INFO << std::string(resp->generate_response());
     delete resp;
     delete req;
     return true;
@@ -156,6 +159,7 @@ bool session::handle_invalid_request(request* req)
     resp->set_header("Content-Type", "text/plain");
     
     write(resp->generate_response());
+    LOG_ERROR << std::string(resp->generate_response());
     delete resp;
     delete req;
     return true;
