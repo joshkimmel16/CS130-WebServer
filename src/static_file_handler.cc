@@ -80,27 +80,17 @@ std::vector<std::string> static_file_handler::parse_file_info (std::string uri)
 //return the appropriate MIME type given a file extension
 std::string static_file_handler::get_mime_type (std::string extension)
 {
-    if (extension == ".txt")
+    //mime_types is defined in mime_types.h
+    std::unordered_map<std::string, std::string>::const_iterator found = mime_types.find(extension);
+    if (!(found == mime_types.end()))
     {
-        return "text/plain";
-    }
-    else if (extension == ".html" || extension == ".htm")
-    {
-        return "text/html";    
-    }
-    else if (extension == ".zip")
-    {
-        return "application/zip";    
-    }
-    else if (extension == ".jpg" || extension == ".jpeg")
-    {
-        return "image/jpeg";    
+        return found->second;
     }
     else
     {
-        return "text/plain";
-    }
-    
+        //this is a catch-all MIME type in case the requested extension isn't currently supported
+        return "application/octet-stream";
+    }   
 }
 
 //serve the file indicated by the URI

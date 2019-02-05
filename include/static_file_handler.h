@@ -9,6 +9,7 @@
 #include <vector>
 #include <regex>
 #include "route_handler.h"
+#include "mime_types.h"
 
 class static_file_handler : public route_handler
 {
