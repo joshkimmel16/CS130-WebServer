@@ -13,6 +13,17 @@
 
 using boost::asio::ip::tcp;
 
+void signal_handler(
+    const boost::system::error_code& error,
+    int signal_number)
+{
+  if (!error)
+  {
+    LOG_INFO << "Server has been terminated.";
+    exit(1);
+  }
+}
+
 int main(int argc, char* argv[]) 
 {
   //testing to see Boost log works///////////////////////////////
@@ -46,6 +57,12 @@ int main(int argc, char* argv[])
     int port = config.GetPort();
     boost::asio::io_service io_service;
 
+    // Construct a signal set registered for process termination.
+    boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
+
+    // Start an asynchronous wait for one of the signals to occur.
+    signals.async_wait(signal_handler);
+
     std::unique_ptr<server> serv(new server(io_service, config, port));
     bool r = serv->create_router();
     if (r)
@@ -64,15 +81,14 @@ int main(int argc, char* argv[])
     {
         throw std::runtime_error("Could not create router! Please ensure that the config file has a router config in it.");
     }
-
-    io_service.run();
     LOG_INFO << "server runs successfullly";
+    io_service.run();
   }
   catch (std::exception& e)
   {
-    std::cerr << "Exception: " << e.what() << "\n";
+    // std::cerr << "Exception: " << e.what() << "\n";
     // logs.logError("caught exception object by reference...");
-    LOG_INFO << "Exception: " << e.what();
+    LOG_ERROR << "Exception: " << e.what();
   }
 
   return 0;
