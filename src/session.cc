@@ -89,8 +89,17 @@ bool session::handle_success(size_t bytes_transferred)
     //check request for validity
     if (req->is_valid())
     {
-	   handle_valid_request(req);
-       return true;
+	   try
+       {
+           handle_valid_request(req);
+           return true;
+       }
+       catch (const std::exception& e)
+       {
+           LOG_ERROR << std::string(e.what());
+           handle_error(make_error_code(boost::system::errc::bad_message));
+           return false;
+       }
     }
     else
     {
@@ -106,7 +115,6 @@ bool session::handle_error(const boost::system::error_code& error)
     resp->set_header("Content-Type", "text/plain");
     
     write(resp->generate_response());
-    LOG_ERROR << std::string(resp->generate_response());
     delete resp;
     return true;
 }
