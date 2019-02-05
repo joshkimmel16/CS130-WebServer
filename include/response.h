@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include "response_codes.h"
 
 class response
 {

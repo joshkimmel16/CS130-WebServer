@@ -99,20 +99,14 @@ std::string response::generate_header_lines ()
 //return the status description corresponding to a given HTTP status
 std::string response::get_status_word (unsigned int status)
 {
-    switch (status)
+    //response_codes is defined in response_codes.h
+    std::unordered_map<unsigned int, std::string>::const_iterator found = response_codes.find(status);
+    if (!(found == response_codes.end()))
     {
-        case (200):
-            return "OK";
-        case (400):
-            return "Bad Request";
-        case (404):
-            return "Not Found";
-        case (405):
-            return "Method Not Allowed";
-        case (500):
-            return "Internal Server Error";
-        default:
-            return "";
+        return found->second;
     }
-    return "";
+    else
+    {
+        return "";
+    }
 }
