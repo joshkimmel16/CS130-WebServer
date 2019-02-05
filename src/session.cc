@@ -49,6 +49,7 @@ bool session::start()
 //async read off of the socket
 bool session::read()
 {
+     LOG_INFO << socket_.remote_endpoint().address().to_string();
      socket_.async_read_some(boost::asio::buffer(data_, max_length),
        boost::bind(&session::handle_read, this,
        boost::asio::placeholders::error,

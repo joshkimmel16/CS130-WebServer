@@ -26,9 +26,6 @@ void signal_handler(
 
 int main(int argc, char* argv[]) 
 {
-  //testing to see Boost log works///////////////////////////////
-  // Logger logs;
-  // logs.logInfo("server_main has been entered...");
   LOG_INFO << "server_main has been entered..";
 
   try
@@ -36,7 +33,6 @@ int main(int argc, char* argv[])
     if (argc != 2)
     {
       std::cerr << "Usage: async_tcp_echo_server <path to config file>\n";
-      // logs.logFatal("Invalid number of arguments...");
       LOG_FATAL << "Invalid number of arguments.";
       return 1;
     }
@@ -47,19 +43,17 @@ int main(int argc, char* argv[])
     config_parser.Parse(argv[1], &config);
     
     if (!config.ParseStatements()) {
-	    // logs.logFatal("parse failure...");
       LOG_FATAL << "Parse failure.";
       return 1;
     } 
-    // logs.logInfo("parse succeed...");
     LOG_INFO << "Parse success.";
 
     int port = config.GetPort();
-    boost::asio::io_service io_service;
+    boost::asio::io_service io_service; 
 
     // Construct a signal set registered for process termination.
     boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
-
+	
     // Start an asynchronous wait for one of the signals to occur.
     signals.async_wait(signal_handler);
 
@@ -86,8 +80,6 @@ int main(int argc, char* argv[])
   }
   catch (std::exception& e)
   {
-    // std::cerr << "Exception: " << e.what() << "\n";
-    // logs.logError("caught exception object by reference...");
     LOG_ERROR << "Exception: " << e.what();
   }
 
