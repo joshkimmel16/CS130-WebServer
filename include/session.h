@@ -35,6 +35,7 @@ private:
 
   //Attributes
   tcp::socket socket_;
+  std::string ip_addr_;
   enum { max_length = 1024 };
   char data_[max_length];
   std::shared_ptr<router> router_;

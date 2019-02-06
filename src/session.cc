@@ -20,7 +20,15 @@ using boost::asio::ip::tcp;
 
 //constructor takes a Boost io_service object
 session::session(boost::asio::io_service& io_service, std::shared_ptr<router> rout)
-: socket_(io_service), router_(rout) {}
+: socket_(io_service), router_(rout) 
+{
+    try{
+	ip_addr_ = socket_.remote_endpoint().address().to_string();
+    }
+    catch(std::exception e){
+        ip_addr_ = "not given";
+    }
+}
 
 //socket returns the underlying socket object for this session
 tcp::socket& session::socket () 
@@ -43,13 +51,13 @@ bool session::set_data (std::string d)
 //waits on data from the requestor
 bool session::start() 
 {
-     return read();
+    LOG_INFO << "IP: " << ip_addr_;
+    return read();
 }
 
 //async read off of the socket
 bool session::read()
 {
-     //LOG_INFO << socket_.remote_endpoint().address().to_string();
      socket_.async_read_some(boost::asio::buffer(data_, max_length),
        boost::bind(&session::handle_read, this,
        boost::asio::placeholders::error,
