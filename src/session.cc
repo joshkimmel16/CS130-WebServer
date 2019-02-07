@@ -67,10 +67,10 @@ bool session::read()
 }
 
 //async write onto the socket
-bool session::write(const char* data)
+bool session::write(std::vector<char> data)
 {
     boost::asio::async_write(socket_,
-        boost::asio::buffer(data, std::strlen(data)),
+        boost::asio::buffer(data),
         boost::bind(&session::handle_write, this,
         boost::asio::placeholders::error));
     
@@ -122,7 +122,9 @@ bool session::handle_error(const boost::system::error_code& error)
     response* resp = new response(500, "Oops! Looks like something went wrong on our side. Please try again later.");
     resp->set_header("Content-Type", "text/plain");
     
-    write(resp->generate_response());
+    std::string response_string = resp->generate_response();
+    std::vector<char> bytes(response_string.begin(), response_string.end());
+    write(bytes);
     delete resp;
     return true;
 }
@@ -162,8 +164,9 @@ bool session::handle_valid_request(request* req)
 {
     response* resp = router_->route_request(req);
     
-    write(resp->generate_response());
-    LOG_INFO << std::string(resp->generate_response());
+    std::string response_string = resp->generate_response();
+    std::vector<char> bytes(response_string.begin(), response_string.end());
+    write(bytes);
     delete resp;
     delete req;
     return true;
@@ -175,8 +178,9 @@ bool session::handle_invalid_request(request* req)
     response* resp = new response(400, std::string(req->get_raw_request()));
     resp->set_header("Content-Type", "text/plain");
     
-    write(resp->generate_response());
-    LOG_ERROR << std::string(resp->generate_response());
+    std::string response_string = resp->generate_response();
+    std::vector<char> bytes(response_string.begin(), response_string.end());
+    write(bytes);
     delete resp;
     delete req;
     return true;

@@ -41,7 +41,8 @@ TEST_F(SessionTest, CallRead) {
 TEST_F(SessionTest, CallWrite) {
 	session* sess = new session(service, rout);
     std::string tmp = "hello";
-	EXPECT_TRUE(sess->write(tmp.c_str()));
+    std::vector<char> bytes(tmp.begin(), tmp.end());
+	EXPECT_TRUE(sess->write(bytes));
 }
 
 

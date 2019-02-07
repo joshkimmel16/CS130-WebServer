@@ -9,6 +9,7 @@
 #include <boost/log/trivial.hpp>
 #include "boost/log/utility/setup.hpp"
 #include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/utility/manipulators/dump.hpp>
 
 // register a global logger
 BOOST_LOG_GLOBAL_LOGGER(logger, boost::log::sources::severity_logger_mt<boost::log::trivial::severity_level>)

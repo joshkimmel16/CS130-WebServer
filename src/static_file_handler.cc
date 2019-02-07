@@ -100,16 +100,16 @@ response* static_file_handler::serve_file (request* req)
     std::vector<std::string> file_info = parse_file_info(req->get_uri());
     try
     {
-        std::ifstream t(path_ + "/" + file_info[0] + file_info[1]);
+        std::ifstream t(path_ + "/" + file_info[0] + file_info[1], std::ios::in | std::ios::binary);
+        std::ostringstream oss;
+        oss << t.rdbuf();
+        std::string f(oss.str());
         if (!t.is_open())
         {
             response* resp = new response(404, "The requested file could not be found! " + (path_ + "/" + file_info[0] + file_info[1]) + "\n");
             resp->set_header("Content-Type", "text/plain");
             return resp;
         }
-        std::string f((std::istreambuf_iterator<char>(t)),
-                 std::istreambuf_iterator<char>());
-        
         response* resp = new response(200, f);
         resp->set_header("Content-Type", get_mime_type(file_info[1]));
         return resp;

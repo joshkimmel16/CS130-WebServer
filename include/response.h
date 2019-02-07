@@ -19,7 +19,7 @@ public:
     void set_status_code (unsigned int sc); //set the status code
     void set_header (std::string h_name, std::string h_value); //set a specific header
     void set_body (std::string body); //set the body
-    const char* generate_response (); //generate a proper HTTP response
+    std::string generate_response (); //generate a proper HTTP response
 private:
     //Methods
     std::string generate_status_line (); //create the status line of the response

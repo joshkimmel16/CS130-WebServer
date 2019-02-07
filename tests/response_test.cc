@@ -58,7 +58,7 @@ TEST_F(ResponseTest, ResponseToNoBody) {
   std::string output = "HTTP/1.1 400 Bad Request\r\n\r\n";
   EXPECT_EQ(resp->get_status_code(), status_code);
   EXPECT_EQ(resp->get_body(), body);
-  EXPECT_EQ(std::string(resp->generate_response()), output);
+  EXPECT_EQ(resp->generate_response(), output);
 }
 
 // HTTP response to request with body

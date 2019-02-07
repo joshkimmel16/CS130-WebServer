@@ -22,7 +22,7 @@ public:
   bool set_data (std::string d); //method to set data explicitly
   bool start(); //start a session by opening a socket
   bool read(); //read off of the socket
-  bool write(const char* data); //write on the socket
+  bool write(std::vector<char> data); //write on the socket
   bool close(); //close the socket
   bool handle_success(size_t bytes_transferred); //handler for successful reads on the socket
   bool handle_error(const boost::system::error_code& error); //handler for errors while reading on the socket
