@@ -167,7 +167,7 @@ bool session::handle_valid_request(request* req)
     std::string response_string = resp->generate_response();
     std::vector<char> bytes(response_string.begin(), response_string.end());
     write(bytes);
-    delete resp;
+    //delete resp;
     delete req;
     return true;
 }
