@@ -1,9 +1,9 @@
-port 8083;
+port 8080;
 router {
     static1 {
-        path "SOMEPATH";
+        path resources/static1;
     }
     static2 {
-        path "SOMEPATH";
+        path resources/static2;
     }
 }

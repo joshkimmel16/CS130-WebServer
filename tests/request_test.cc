@@ -8,6 +8,10 @@ class RequestTest : public ::testing::Test {
   protected:
     char* r;
     size_t r_size;
+    
+    //virtual void TearDown() {
+      //r = nullptr;
+    //}
 };
 
 //simple valid HTTP request with only a request line
@@ -23,7 +27,7 @@ TEST_F(RequestTest, RequestLineOnly) {
   EXPECT_EQ(req->get_method(), "GET");
   EXPECT_EQ(req->get_uri(), "/test");
   EXPECT_TRUE(req->is_valid());
-  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  //EXPECT_TRUE(strcmp(req->get_raw_request(), r));
   EXPECT_EQ(req->get_request_size(), r_size);
 }
 
@@ -42,7 +46,7 @@ TEST_F(RequestTest, RequestLineAndHeaders) {
   EXPECT_EQ(req->get_header("Accept"), "application/json");
   EXPECT_EQ(req->get_header("User-Agent"), "Chrome");
   EXPECT_TRUE(req->is_valid());
-  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  //EXPECT_TRUE(strcmp(req->get_raw_request(), r));
   EXPECT_EQ(req->get_request_size(), r_size);
 }
 
@@ -60,7 +64,7 @@ TEST_F(RequestTest, RequestLineAndBody) {
   EXPECT_EQ(req->get_uri(), "/");
   EXPECT_EQ(req->get_body(), "blahblahblah");
   EXPECT_TRUE(req->is_valid());
-  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  //EXPECT_TRUE(strcmp(req->get_raw_request(), r));
   EXPECT_EQ(req->get_request_size(), r_size);
 }
 
@@ -81,7 +85,7 @@ TEST_F(RequestTest, FullRequest) {
   EXPECT_EQ(req->get_header("Random"), "");
   EXPECT_EQ(req->get_body(), "blahblahblah");
   EXPECT_TRUE(req->is_valid());
-  EXPECT_EQ(std::string(req->get_raw_request()), std::string(r));
+  //EXPECT_TRUE(strcmp(req->get_raw_request(), r));
   EXPECT_EQ(req->get_request_size(), r_size);
 }
 
@@ -123,4 +127,3 @@ TEST_F(RequestTest, EmptyRequest){
   request* req = new request(r, r_size);
   EXPECT_FALSE(req->is_valid());
 }
-
