@@ -22,12 +22,6 @@ using boost::asio::ip::tcp;
 session::session(boost::asio::io_service& io_service, std::shared_ptr<router> rout)
 : socket_(io_service), router_(rout) 
 {
-    try{
-	ip_addr_ = socket_.remote_endpoint().address().to_string();
-    }
-    catch(std::exception e){
-        ip_addr_ = "not given";
-    }
 }
 
 //socket returns the underlying socket object for this session
@@ -51,6 +45,11 @@ bool session::set_data (std::string d)
 //waits on data from the requestor
 bool session::start() 
 {
+    try{
+        ip_addr_ = socket_.remote_endpoint().address().to_string();
+    }catch(std::exception e){
+        ip_addr_ = "not given";
+    }
     LOG_INFO << "IP: " << ip_addr_;
     return read();
 }
