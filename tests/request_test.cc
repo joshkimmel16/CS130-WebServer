@@ -8,10 +8,6 @@ class RequestTest : public ::testing::Test {
   protected:
     char* r;
     size_t r_size;
-    
-    //virtual void TearDown() {
-      //r = nullptr;
-    //}
 };
 
 //simple valid HTTP request with only a request line
@@ -23,7 +19,7 @@ TEST_F(RequestTest, RequestLineOnly) {
   r = char_array;
   r_size = std::strlen(char_array);
     
-  request* req = new request(r, r_size);
+  std::unique_ptr<request> req(new request(r, r_size));
   EXPECT_EQ(req->get_method(), "GET");
   EXPECT_EQ(req->get_uri(), "/test");
   EXPECT_TRUE(req->is_valid());
@@ -40,7 +36,7 @@ TEST_F(RequestTest, RequestLineAndHeaders) {
   r = char_array;
   r_size = std::strlen(char_array);
     
-  request* req = new request(r, r_size);
+  std::unique_ptr<request> req(new request(r, r_size));
   EXPECT_EQ(req->get_method(), "DELETE");
   EXPECT_EQ(req->get_uri(), "/testing");
   EXPECT_EQ(req->get_header("Accept"), "application/json");
@@ -59,7 +55,7 @@ TEST_F(RequestTest, RequestLineAndBody) {
   r = char_array;
   r_size = std::strlen(char_array);
     
-  request* req = new request(r, r_size);
+  std::unique_ptr<request> req(new request(r, r_size));
   EXPECT_EQ(req->get_method(), "POST");
   EXPECT_EQ(req->get_uri(), "/");
   EXPECT_EQ(req->get_body(), "blahblahblah");
@@ -77,7 +73,7 @@ TEST_F(RequestTest, FullRequest) {
   r = char_array;
   r_size = std::strlen(char_array);
     
-  request* req = new request(r, r_size);
+  std::unique_ptr<request> req(new request(r, r_size));
   EXPECT_EQ(req->get_method(), "PUT");
   EXPECT_EQ(req->get_uri(), "/test/another");
   EXPECT_EQ(req->get_header("Content-Type"), "application/json");
@@ -98,7 +94,7 @@ TEST_F(RequestTest, GarbageRequest) {
   r = char_array;
   r_size = std::strlen(char_array);
     
-  request* req = new request(r, r_size);
+  std::unique_ptr<request> req(new request(r, r_size));
   EXPECT_FALSE(req->is_valid());
 }
 
@@ -111,7 +107,7 @@ TEST_F(RequestTest, BadRequestLine) {
   r = char_array;
   r_size = std::strlen(char_array);
     
-  request* req = new request(r, r_size);
+  std::unique_ptr<request> req(new request(r, r_size));
   EXPECT_FALSE(req->is_valid());
 }
 
@@ -124,6 +120,6 @@ TEST_F(RequestTest, EmptyRequest){
   r = char_array;
   r_size = std::strlen(char_array);
 
-  request* req = new request(r, r_size);
+  std::unique_ptr<request> req(new request(r, r_size));
   EXPECT_FALSE(req->is_valid());
 }

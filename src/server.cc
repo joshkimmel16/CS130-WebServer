@@ -57,9 +57,9 @@ void server::handle_accept(session* new_session,
     {
       new_session->start();
     }
-    else 
+    else
     {
-      delete new_session;
+        delete new_session;
     }
 
     start_accept();

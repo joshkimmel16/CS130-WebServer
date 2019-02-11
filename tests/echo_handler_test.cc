@@ -9,8 +9,6 @@ class EchoHandlerTest : public ::testing::Test {
     char* r;
     size_t r_size;
     std::shared_ptr<NginxConfig> config;
-    request* req;
-    response* res;
 };
 
 //simple valid HTTP request
@@ -21,16 +19,12 @@ TEST_F(EchoHandlerTest, SimpleGet) {
   strcpy(char_array, input.c_str());
   r = char_array;
   r_size = std::strlen(char_array);
-  req = new request(r, r_size);
+  std::shared_ptr<request> req(new request(r, r_size));
     
-  echo_handler* out = new echo_handler(config);
-  res = out->handle_request(req);
+  std::unique_ptr<echo_handler> out(new echo_handler(config));
+  std::shared_ptr<response> res = out->handle_request(req);
   
   EXPECT_EQ(res->get_body(), "GET /test HTTP/1.1\r\n\r\n"); //body should be equal to the request
   EXPECT_EQ(res->get_status_code(), 200); //status code should be 200
   EXPECT_EQ(res->get_header("Content-Type"), "text/plain"); //Content-Type: text/plain header should be set
-    
-  delete res;
-  delete out;
-  delete req;
 }

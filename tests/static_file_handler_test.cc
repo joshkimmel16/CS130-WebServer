@@ -11,8 +11,6 @@ class StaticFileHandlerTest : public ::testing::Test {
     char* r;
     size_t r_size;
     std::shared_ptr<NginxConfig> config;
-    request* req;
-    response* res;
     NginxConfigParser parser;
     NginxConfig out_config;
     
@@ -31,21 +29,17 @@ TEST_F(StaticFileHandlerTest, StaticTest) {
   strcpy(char_array, input.c_str());
   r = char_array;
   r_size = std::strlen(char_array);
-  req = new request(r, r_size);
+  std::shared_ptr<request> req(new request(r, r_size));
     
-  static_file_handler* out = new static_file_handler(config);
+  std::unique_ptr<static_file_handler> out(new static_file_handler(config));
   std::vector<std::string> check = out->parse_file_info(req->get_uri());
   std::string test = (out->get_static_file_path() + "/" + check[0] + check[1]);
   EXPECT_EQ(test, "static/static1/text.txt");
     
-  response* res = out->handle_request(req);
+  std::shared_ptr<response> res = out->handle_request(req);
   EXPECT_EQ(res->get_status_code(), 200);
   EXPECT_EQ(res->get_header("Content-Type"), "text/plain");
   EXPECT_EQ(res->get_body(), "abc");
-    
-  delete res;
-  delete out;
-  delete req;
 }
 
 //invalid method test
@@ -56,16 +50,12 @@ TEST_F(StaticFileHandlerTest, InvalidMethod) {
   strcpy(char_array, input.c_str());
   r = char_array;
   r_size = std::strlen(char_array);
-  req = new request(r, r_size);
+  std::shared_ptr<request> req(new request(r, r_size));
     
-  static_file_handler* out = new static_file_handler(config);
-  res = out->handle_request(req);
+  std::unique_ptr<static_file_handler> out(new static_file_handler(config));
+  std::shared_ptr<response> res = out->handle_request(req);
   
   EXPECT_EQ(res->get_body(), "This route only supports the HTTP GET method!"); //body should be the error message
   EXPECT_EQ(res->get_status_code(), 405); //status code should be 405
   EXPECT_EQ(res->get_header("Content-Type"), "text/plain"); //Content-Type: text/plain header should be set
-    
-  delete res;
-  delete out;
-  delete req;
 }

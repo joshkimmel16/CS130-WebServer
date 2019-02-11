@@ -21,7 +21,7 @@ static_file_handler::static_file_handler (std::shared_ptr<NginxConfig> config) :
 }
 
 //overridden method in parent class to handle a request
-response* static_file_handler::handle_request (request* req)
+std::shared_ptr<response> static_file_handler::handle_request (std::shared_ptr<request> req)
 {
     std::string method = req->get_method();
     if (method == "GET")
@@ -95,37 +95,38 @@ std::string static_file_handler::get_mime_type (std::string extension)
 
 //serve the file indicated by the URI
 //if the file isn't present, return 404
-response* static_file_handler::serve_file (request* req)
+std::shared_ptr<response> static_file_handler::serve_file (std::shared_ptr<request> req)
 {
-    std::vector<std::string> file_info = parse_file_info(req->get_uri());
     try
     {
+        std::vector<std::string> file_info = parse_file_info(req->get_uri());
         std::ifstream t(path_ + "/" + file_info[0] + file_info[1], std::ios::in | std::ios::binary);
-        std::ostringstream oss;
-        oss << t.rdbuf();
-        std::string f(oss.str());
         if (!t.is_open())
         {
-            response* resp = new response(404, "The requested file could not be found! " + (path_ + "/" + file_info[0] + file_info[1]) + "\n");
+            std::shared_ptr<response> resp(new response(404, "The requested file could not be found!\n"));
             resp->set_header("Content-Type", "text/plain");
             return resp;
         }
-        response* resp = new response(200, f);
+        std::ostringstream oss;
+        oss << t.rdbuf();
+        std::string f(oss.str());
+        
+        std::shared_ptr<response> resp(new response(200, f));
         resp->set_header("Content-Type", get_mime_type(file_info[1]));
         return resp;
     }
     catch (int e)
     {
-        response* resp = new response(500, "An error occurred while trying to retrieve the requested file!\n");
+        std::shared_ptr<response> resp(new response(500, "An error occurred while trying to retrieve the requested file!\n"));
         resp->set_header("Content-Type", "text/plain");
         return resp;
     }
 }
 
 //the method used in the request wasn't valid so return a 405
-response* static_file_handler::invalid_method(request* req)
+std::shared_ptr<response> static_file_handler::invalid_method(std::shared_ptr<request> req)
 {
-    response* resp = new response(405, "This route only supports the HTTP GET method!");
+    std::shared_ptr<response> resp(new response(405, "This route only supports the HTTP GET method!"));
     resp->set_header("Content-Type", "text/plain");
     return resp;
 }

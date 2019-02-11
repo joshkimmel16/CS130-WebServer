@@ -29,39 +29,38 @@ class SessionTest : public ::testing::Test {
 };
 
 TEST_F(SessionTest, CallStart) {
-	session* sess = new session(service, rout);
+	std::unique_ptr<session> sess(new session(service, rout));
 	EXPECT_TRUE(sess->start());
 }
 
 TEST_F(SessionTest, CallRead) {
-	session* sess = new session(service, rout);
+	std::unique_ptr<session> sess(new session(service, rout));
 	EXPECT_TRUE(sess->read());
 }
 
 TEST_F(SessionTest, CallWrite) {
-	session* sess = new session(service, rout);
+	std::unique_ptr<session> sess(new session(service, rout));
     std::string tmp = "hello";
     std::vector<char> bytes(tmp.begin(), tmp.end());
 	EXPECT_TRUE(sess->write(bytes));
 }
 
-
 TEST_F(SessionTest, HandleSuccessValid) {
-	session* sess = new session(service, rout);
+	std::unique_ptr<session> sess(new session(service, rout));
     sess->set_data("GET /test HTTP/1.1\r\n\r\n");
     size_t bytes_transferred = 30;
 	EXPECT_TRUE(sess->handle_success(bytes_transferred));
 }
 
 TEST_F(SessionTest, HandleSuccessInValid) {
-	session* sess = new session(service, rout);
+	std::unique_ptr<session> sess(new session(service, rout));
     sess->set_data("blahblahblah");
     size_t bytes_transferred = 12;
 	EXPECT_FALSE(sess->handle_success(bytes_transferred));
 }
 
 TEST_F(SessionTest, HandleError) {
-	session* sess = new session(service, rout);
+	std::unique_ptr<session> sess(new session(service, rout));
     const boost::system::error_code error;
         
 	EXPECT_TRUE(sess->handle_error(error));

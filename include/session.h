@@ -30,8 +30,8 @@ private:
   //Methods
   void handle_read(const boost::system::error_code& error, size_t bytes_transferred); //handle async reads
   void handle_write(const boost::system::error_code& error); //handle async writes
-  bool handle_valid_request(request* req); //handler for valid requests
-  bool handle_invalid_request(request* req); //handler for invalid requests
+  bool handle_valid_request(std::shared_ptr<request> req); //handler for valid requests
+  bool handle_invalid_request(std::shared_ptr<request> req); //handler for invalid requests
 
   //Attributes
   tcp::socket socket_;
@@ -39,6 +39,7 @@ private:
   enum { max_length = 1024 };
   char data_[max_length];
   std::shared_ptr<router> router_;
+  std::shared_ptr<response> holder_;
 };
 
 #endif

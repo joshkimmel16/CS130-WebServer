@@ -15,7 +15,7 @@ class route_handler
 public:
     //Methods
     route_handler (std::shared_ptr<NginxConfig> config) { config_ = config; }; //constructor overload
-    virtual response* handle_request (request* req)=0; //given a request, generate an appropriate response
+    virtual std::shared_ptr<response> handle_request (std::shared_ptr<request> req)=0; //given a request, generate an appropriate response
 protected:    
     //Attributes
     std::shared_ptr<NginxConfig> config_;

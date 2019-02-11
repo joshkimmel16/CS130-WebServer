@@ -9,8 +9,6 @@ class DefaultHandlerTest : public ::testing::Test {
     char* r;
     size_t r_size;
     std::shared_ptr<NginxConfig> config;
-    request* req;
-    response* res;
 };
 
 //ensure response is as expected
@@ -21,16 +19,12 @@ TEST_F(DefaultHandlerTest, DefaultTest) {
   strcpy(char_array, input.c_str());
   r = char_array;
   r_size = std::strlen(char_array);
-  req = new request(r, r_size);
+  std::shared_ptr<request> req(new request(r, r_size));
     
-  default_handler* out = new default_handler(config);
-  res = out->handle_request(req);
+  std::unique_ptr<default_handler> out(new default_handler(config));
+  std::shared_ptr<response> res = out->handle_request(req);
   
   EXPECT_EQ(res->get_body(), "The requested resource at " + req->get_uri() + " could not be found!"); //body should be default message
   EXPECT_EQ(res->get_status_code(), 404); //status code should be 404
   EXPECT_EQ(res->get_header("Content-Type"), "text/plain"); //Content-Type: text/plain header should be set
-    
-  delete res;
-  delete out;
-  delete req;
 }

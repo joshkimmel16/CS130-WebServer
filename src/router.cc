@@ -50,12 +50,11 @@ bool router::register_default_header (std::string header_name, std::string heade
 
 //main method to route the request to a particular handler and return the generated response
 //input is a valid HTTP request
-response* router::route_request (request* req)
+std::shared_ptr<response> router::route_request (std::shared_ptr<request> req)
 {
-    route_handler* rh = select_handler(req->get_uri());
-    response* output = rh->handle_request(req);
+    std::shared_ptr<route_handler> rh = select_handler(req->get_uri());
+    std::shared_ptr<response> output = rh->handle_request(req);
     apply_default_headers(output);
-    delete rh;
     return output;
 }
 
@@ -107,7 +106,7 @@ std::shared_ptr<NginxConfig> router::get_handler_config (std::string handler_nam
 }
 
 //apply the default headers for the server to the given response
-bool router::apply_default_headers (response* res)
+bool router::apply_default_headers (std::shared_ptr<response> res)
 {
     for (std::pair<std::string, std::string> header : headers_)
     {
@@ -118,7 +117,7 @@ bool router::apply_default_headers (response* res)
 
 //return the appropriate route_handler given the provided URI 
 //TODO: this is a little clunky right now...
-route_handler* router::select_handler (std::string uri)
+std::shared_ptr<route_handler> router::select_handler (std::string uri)
 {
     for (std::pair<std::string, std::string> mapping : route_map_)
     {
@@ -128,18 +127,22 @@ route_handler* router::select_handler (std::string uri)
        {
            if (mapping.second == "echo")
            {
-               return new echo_handler(get_handler_config("echo"));
+               std::shared_ptr<route_handler> h(new echo_handler(get_handler_config("echo")));
+               return h;
            }
            else if (mapping.second == "static1")
            {
-               return new static_file_handler(get_handler_config("static1"));
+               std::shared_ptr<route_handler> h(new static_file_handler(get_handler_config("static1")));
+               return h;
            }
            else if (mapping.second == "static2")
            {
-               return new static_file_handler(get_handler_config("static2"));
+               std::shared_ptr<route_handler> h(new static_file_handler(get_handler_config("static2")));
+               return h;
            }
        }
     }
     
-    return new default_handler(get_handler_config("default"));
+    std::shared_ptr<route_handler> h(new default_handler(get_handler_config("default")));
+    return h;
 }

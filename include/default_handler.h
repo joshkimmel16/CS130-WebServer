@@ -13,10 +13,10 @@ class default_handler : public route_handler
 public:
     //Methods
     default_handler (std::shared_ptr<NginxConfig> config); //constructor overload
-    response* handle_request (request* req); //given a request, generate an appropriate response
+    std::shared_ptr<response> handle_request (std::shared_ptr<request> req); //given a request, generate an appropriate response
 private:    
     //Methods
-    response* generate_404_response (request* req); //create a 404 response
+    std::shared_ptr<response> generate_404_response (std::shared_ptr<request> req); //create a 404 response
 };
 
 #endif

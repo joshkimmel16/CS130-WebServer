@@ -22,7 +22,7 @@ TEST_F(ServerTest, ValidRouter) {
 	parser.Parse("server/router_config", &out_config);
     out_config.ParseStatements();
     port = out_config.GetPort();
-	server* serv = new server(service, out_config, port);
+	std::unique_ptr<server> serv(new server(service, out_config, port));
 	EXPECT_TRUE(serv->create_router());
     EXPECT_TRUE(serv->register_route("/test", "testing"));
     EXPECT_TRUE(serv->register_default_header("header", "value"));
@@ -34,7 +34,7 @@ TEST_F(ServerTest, InvalidRouter) {
 	parser.Parse("server/bad_config", &out_config);
     out_config.ParseStatements();
     port = out_config.GetPort();
-	server* serv = new server(service, out_config, port);
+	std::unique_ptr<server> serv(new server(service, out_config, port));
 	EXPECT_FALSE(serv->create_router());
     EXPECT_FALSE(serv->start_accept());
     EXPECT_FALSE(serv->get_status());
