@@ -218,3 +218,12 @@ TEST_F(NginxConfigParserTest, NoPortNumConfig) {
   EXPECT_FALSE(parse_stmt);
 
 }
+
+TEST_F(NginxConfigParserTest, HighPortConfig) {
+  bool parse_config = parser.Parse("high_port_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_FALSE(parse_stmt);
+
+}

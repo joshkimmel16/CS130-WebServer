@@ -272,7 +272,8 @@ bool NginxConfig::ParseStatements() {
       if (prev_token == "port" && !found_port) {
         try {
           port = std::stoi(token);
-          if (port >= 0) {
+          int MAX_PORT = 65535;
+          if (port > 0 && port <= MAX_PORT) {
             port_ = port;
             found_port = true;
           }
