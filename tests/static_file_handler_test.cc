@@ -31,9 +31,11 @@ TEST_F(StaticFileHandlerTest, StaticTest) {
   r_size = std::strlen(char_array);
   std::shared_ptr<request> req(new request(r, r_size));
     
-  std::unique_ptr<static_file_handler> out(new static_file_handler(config));
-  std::vector<std::string> check = out->parse_file_info(req->get_uri());
-  std::string test = (out->get_static_file_path() + "/" + check[0] + check[1]);
+  std::shared_ptr<route_handler> out = static_file_handler::create_handler(config, "HOLDER");
+  
+  static_file_handler* tmp = dynamic_cast<static_file_handler*>(out.get());
+  std::vector<std::string> check = tmp->parse_file_info(req->get_uri());
+  std::string test = (tmp->get_static_file_path() + "/" + check[0] + check[1]);
   EXPECT_EQ(test, "static/static1/text.txt");
     
   std::shared_ptr<response> res = out->handle_request(req);
@@ -52,7 +54,7 @@ TEST_F(StaticFileHandlerTest, InvalidMethod) {
   r_size = std::strlen(char_array);
   std::shared_ptr<request> req(new request(r, r_size));
     
-  std::unique_ptr<static_file_handler> out(new static_file_handler(config));
+  std::shared_ptr<route_handler> out = static_file_handler::create_handler(config, "HOLDER");
   std::shared_ptr<response> res = out->handle_request(req);
   
   EXPECT_EQ(res->get_body(), "This route only supports the HTTP GET method!"); //body should be the error message

@@ -21,7 +21,7 @@ TEST_F(EchoHandlerTest, SimpleGet) {
   r_size = std::strlen(char_array);
   std::shared_ptr<request> req(new request(r, r_size));
     
-  std::unique_ptr<echo_handler> out(new echo_handler(config));
+  std::shared_ptr<route_handler> out = echo_handler::create_handler(config, "HOLDER");
   std::shared_ptr<response> res = out->handle_request(req);
   
   EXPECT_EQ(res->get_body(), "GET /test HTTP/1.1\r\n\r\n"); //body should be equal to the request

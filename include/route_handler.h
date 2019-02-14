@@ -14,11 +14,13 @@ class route_handler
 {
 public:
     //Methods
-    route_handler (std::shared_ptr<NginxConfig> config) { config_ = config; }; //constructor overload
+    static std::shared_ptr<route_handler> create_handler (std::shared_ptr<NginxConfig> config, std::string root_path);
     virtual std::shared_ptr<response> handle_request (std::shared_ptr<request> req)=0; //given a request, generate an appropriate response
 protected:    
     //Attributes
+    route_handler (std::shared_ptr<NginxConfig> config, std::string root_path) { config_ = config; root_path_ = root_path; }; //constructor overload
     std::shared_ptr<NginxConfig> config_;
+    std::string root_path_;
 };
 
 #endif

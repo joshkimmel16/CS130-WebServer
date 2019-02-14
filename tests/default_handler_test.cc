@@ -21,7 +21,7 @@ TEST_F(DefaultHandlerTest, DefaultTest) {
   r_size = std::strlen(char_array);
   std::shared_ptr<request> req(new request(r, r_size));
     
-  std::unique_ptr<default_handler> out(new default_handler(config));
+  std::shared_ptr<route_handler> out = default_handler::create_handler(config, "HOLDER");
   std::shared_ptr<response> res = out->handle_request(req);
   
   EXPECT_EQ(res->get_body(), "The requested resource at " + req->get_uri() + " could not be found!"); //body should be default message

@@ -127,22 +127,18 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
        {
            if (mapping.second == "echo")
            {
-               std::shared_ptr<route_handler> h(new echo_handler(get_handler_config("echo")));
-               return h;
+               return echo_handler::create_handler(get_handler_config("echo"), "HOLDER");
            }
            else if (mapping.second == "static1")
            {
-               std::shared_ptr<route_handler> h(new static_file_handler(get_handler_config("static1")));
-               return h;
+               return static_file_handler::create_handler(get_handler_config("static1"), "HOLDER");
            }
            else if (mapping.second == "static2")
            {
-               std::shared_ptr<route_handler> h(new static_file_handler(get_handler_config("static2")));
-               return h;
+               return static_file_handler::create_handler(get_handler_config("static2"), "HOLDER");
            }
        }
     }
     
-    std::shared_ptr<route_handler> h(new default_handler(get_handler_config("default")));
-    return h;
+    return default_handler::create_handler(get_handler_config("default"), "HOLDER");
 }

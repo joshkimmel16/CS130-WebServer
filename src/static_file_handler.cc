@@ -15,9 +15,15 @@
 
 //overriden constructor takes a config
 //for this route, a config is required that contains a path to the static images
-static_file_handler::static_file_handler (std::shared_ptr<NginxConfig> config) : route_handler(config) 
+static_file_handler::static_file_handler (std::shared_ptr<NginxConfig> config, std::string root_path) : route_handler(config, root_path) 
 {
     path_ = get_static_file_path();
+}
+
+//overriden factory method to create a new instance
+std::shared_ptr<route_handler> static_file_handler::create_handler (std::shared_ptr<NginxConfig> config, std::string root_path)
+{
+    return std::shared_ptr<static_file_handler>(new static_file_handler(config, root_path));
 }
 
 //overridden method in parent class to handle a request

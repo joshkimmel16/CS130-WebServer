@@ -8,7 +8,13 @@
 
 //overriden constructor takes a config
 //for this route, no config is used so the input is expected to be NULL
-default_handler::default_handler (std::shared_ptr<NginxConfig> config) : route_handler(config) {}
+default_handler::default_handler (std::shared_ptr<NginxConfig> config, std::string root_path) : route_handler(config, root_path) {}
+
+//overriden factory method to create a new instance
+std::shared_ptr<route_handler> default_handler::create_handler (std::shared_ptr<NginxConfig> config, std::string root_path)
+{
+    return std::shared_ptr<default_handler>(new default_handler(config, root_path));
+}
 
 //overridden method in parent class to handle a request
 std::shared_ptr<response> default_handler::handle_request (std::shared_ptr<request> req)
