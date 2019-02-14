@@ -21,7 +21,6 @@ class StaticFileHandlerTest : public ::testing::Test {
 };
 
 //simple valid HTTP request for a file
-//TODO: update this with a valid test once one can happen
 TEST_F(StaticFileHandlerTest, StaticTest) {
   std::string input = "GET /static1/text.txt HTTP/1.1\r\n\r\n";
   int n = input.length();    
@@ -42,6 +41,23 @@ TEST_F(StaticFileHandlerTest, StaticTest) {
   EXPECT_EQ(res->get_status_code(), 200);
   EXPECT_EQ(res->get_header("Content-Type"), "text/plain");
   EXPECT_EQ(res->get_body(), "abc");
+}
+
+//request doesn't point to a file
+TEST_F(StaticFileHandlerTest, StaticTestBad) {
+  std::string input = "GET /static1/blah HTTP/1.1\r\n\r\n";
+  int n = input.length();    
+  char char_array[n+1];   
+  strcpy(char_array, input.c_str());
+  r = char_array;
+  r_size = std::strlen(char_array);
+  std::shared_ptr<request> req(new request(r, r_size));
+    
+  std::unique_ptr<static_file_handler> out(new static_file_handler(config));
+  std::shared_ptr<response> res = out->handle_request(req);
+  EXPECT_EQ(res->get_status_code(), 404);
+  EXPECT_EQ(res->get_header("Content-Type"), "text/plain");
+  EXPECT_EQ(res->get_body(), "The requested file could not be found!\n");
 }
 
 //invalid method test

@@ -106,6 +106,13 @@ std::shared_ptr<response> static_file_handler::serve_file (std::shared_ptr<reque
     try
     {
         std::vector<std::string> file_info = parse_file_info(req->get_uri());
+        if (file_info.size() < 2)
+        {
+            std::shared_ptr<response> resp(new response(404, "The requested file could not be found!\n"));
+            resp->set_header("Content-Type", "text/plain");
+            return resp;
+        }
+        
         std::ifstream t(path_ + "/" + file_info[0] + file_info[1], std::ios::in | std::ios::binary);
         if (!t.is_open())
         {
