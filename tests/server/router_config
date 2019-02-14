@@ -1,6 +1,14 @@
 port 8080;
 router {
-    static {
-        path "images";
+    handler echo {
+        location /echo;
+    }
+    handler static1 {
+        location /static1/.*;
+        root static/static1;
+    }
+    handler static2 {
+        location /static2/.*;
+        root static/static2;
     }
 }

@@ -23,12 +23,36 @@ bool router::register_route (std::string uri, std::string handler_name)
     auto it = route_map_.find(uri);
     if (it != route_map_.end())
     {
-	    it->second = handler_name;
+        it->second = handler_name;
     }
     else
     {
         std::pair<std::string, std::string> h (uri, handler_name);
         route_map_.insert(h);
+    }
+}
+
+//use the provided configuration file to register all routes
+bool router::register_routes_from_config ()
+{
+    for (const auto& statement : config_->statements_) 
+    {
+        //pick out all handler configurations
+        if (statement->tokens_.size() > 1 && statement->tokens_[0] == "handler" && statement->child_block_)
+        {
+            std::string handlerKey = statement->tokens_[1];
+            std::shared_ptr<NginxConfig> rConfig = statement->child_block_;
+            for (const auto& s : rConfig->statements_) 
+            {
+                //pick out location config param
+                if (s->tokens_.size() > 0 && s->tokens_[0] == "location")
+                {
+                    std::string uri = s->tokens_[1];
+                    register_route(uri, handlerKey);
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -96,9 +120,12 @@ std::shared_ptr<NginxConfig> router::get_handler_config (std::string handler_nam
         if (statement->child_block_)
         {
             //must have at least one element if the child block is not null
-            if (statement->tokens_[0] == handler_name)
+            if (statement->tokens_[0] == "handler")
             {
-                output = statement->child_block_;
+                if (statement->tokens_.size() > 1 && statement->tokens_[1] == handler_name)
+                {
+                    output = statement->child_block_;
+                }
             }
         }
     }

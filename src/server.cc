@@ -86,6 +86,7 @@ bool server::create_router ()
     {
         std::shared_ptr<router> tmp(new router(output));
         router_ = tmp;
+        router_->register_routes_from_config();
     }
     return (output != nullptr) ? true : false;
 }

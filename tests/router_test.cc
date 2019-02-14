@@ -36,6 +36,17 @@ TEST_F(RouterTest, RegisterHeader) {
   EXPECT_EQ(out->get_header("User-Agent"), ""); //missing header should return empty string
 }
 
+//ensure routes are properly registered when coming from a config file
+TEST_F(RouterTest, RegisterRoutesFromConfig) {
+  std::unique_ptr<router> out(new router(config));
+  out->register_routes_from_config();
+  
+  EXPECT_EQ(out->get_route_handler("/echo"), "echo"); //route should be registered appropriately
+  EXPECT_EQ(out->get_route_handler("/static1/.*"), "static1"); //route should be registered appropriately
+  EXPECT_EQ(out->get_route_handler("/static2/.*"), "static2"); //route should be registered appropriately
+  EXPECT_EQ(out->get_route_handler("/random"), ""); //missing route should return empty string
+}
+
 //test echo route
 TEST_F(RouterTest, Echo) {
   std::unique_ptr<router> out(new router(config));

@@ -61,9 +61,9 @@ int main(int argc, char* argv[])
     bool r = serv->create_router();
     if (r)
     {
-        serv->register_route("/echo", "echo");
-        serv->register_route("/static1/.*", "static1");
-        serv->register_route("/static2/.*", "static2");
+        //serv->register_route("/echo", "echo");
+        //serv->register_route("/static1/.*", "static1");
+        //serv->register_route("/static2/.*", "static2");
         
         bool start = serv->start_accept();
         if (!start)

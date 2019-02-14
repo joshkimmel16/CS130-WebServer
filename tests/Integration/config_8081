@@ -1,9 +1,14 @@
 port 8080;
 router {
-    static1 {
-        path Integration/static1;
+    handler echo {
+        location /echo;
     }
-    static2 {
-        path Integration/static2;
+    handler static1 {
+        location /static1/.*;
+        root static/static1;
+    }
+    handler static2 {
+        location /static2/.*;
+        root static/static2;
     }
 }

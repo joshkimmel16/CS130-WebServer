@@ -50,7 +50,7 @@ std::string static_file_handler::get_static_file_path ()
         //statement we're looking for has exactly 2 tokens
          if (statement->tokens_.size() == 2)
          {
-             if (statement->tokens_[0] == "path")
+             if (statement->tokens_[0] == "root")
              {
                  output = statement->tokens_[1];
              }
