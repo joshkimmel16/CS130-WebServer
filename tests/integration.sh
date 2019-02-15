@@ -33,9 +33,9 @@ create_curl_request() {
     create_header_string
     if [ ! -z "$REQ_BODY" ]
     then
-        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} --data \"${REQ_BODY}\" http://${REQ_HOST}:${SERVER_PORT}${REQ_URI}"
+        REQ_COMMAND="curl -i -s -X ${REQ_METHOD}${REQ_HEADER_STRING} --data \"${REQ_BODY}\" http://${REQ_HOST}:${SERVER_PORT}${REQ_URI}"
     else
-        REQ_COMMAND="curl -i -X ${REQ_METHOD}${REQ_HEADER_STRING} http://${REQ_HOST}:${SERVER_PORT}${REQ_URI}"
+        REQ_COMMAND="curl -i -s -X ${REQ_METHOD}${REQ_HEADER_STRING} http://${REQ_HOST}:${SERVER_PORT}${REQ_URI}"
     fi
 }
 
