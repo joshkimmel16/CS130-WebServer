@@ -3,6 +3,9 @@ router {
     handler echo {
         location /echo;
     }
+    handler status {
+        location /status;
+    }
     handler static1 {
         location /static1/.*;
         root static/static1;

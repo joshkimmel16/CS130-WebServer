@@ -8,6 +8,7 @@
 #include "echo_handler.h"
 #include "static_file_handler.h"
 #include "default_handler.h"
+#include "status_handler.h"
 
 //constructor takes a config
 router::router (std::shared_ptr<NginxConfig> config)
@@ -163,6 +164,9 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
            else if (mapping.second == "static2")
            {
                return static_file_handler::create_handler(get_handler_config("static2"), "HOLDER");
+           }
+           else if (mapping.second == "status") {
+               return status_handler::create_handler(get_handler_config("status"), "HOLDER");
            }
        }
     }
