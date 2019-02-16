@@ -25,6 +25,7 @@ private:
     std::shared_ptr<NginxConfig> get_handler_config (std::string handler_name); //retrieve the config for a particular handler
     bool apply_default_headers (std::shared_ptr<response> res); //apply default headers to a given response
     std::shared_ptr<route_handler> select_handler (std::string uri); //retrieve the appropriate handler object given a URI
+    std::string longest_prefix_match (std::string uri); //pick registered route that is best match for given URI
     
     //Attributes
     std::shared_ptr<NginxConfig> config_;

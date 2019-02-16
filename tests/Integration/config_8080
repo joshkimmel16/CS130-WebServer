@@ -7,11 +7,11 @@ router {
         location /status;
     }
     handler static1 {
-        location /static1/.*;
+        location /static1;
         root static/static1;
     }
     handler static2 {
-        location /static2/.*;
+        location /static2;
         root static/static2;
     }
 }

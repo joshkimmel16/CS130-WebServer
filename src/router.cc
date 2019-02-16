@@ -144,33 +144,53 @@ bool router::apply_default_headers (std::shared_ptr<response> res)
     return true;
 }
 
+//pick registered route that is best match for given URI
+std::string router::longest_prefix_match (std::string uri)
+{
+    std::string longest = "";
+    unsigned int current_count = 0;
+    for (std::pair<std::string, std::string> mapping : route_map_)
+    {
+        if (uri.length() < mapping.first.length()) { continue; }
+        bool match = true;
+        for (unsigned int i = 0; i<mapping.first.length(); i++)
+        {
+            if (mapping.first[i] != uri[i]) { match = false; }
+            else { current_count++; }
+        }
+        if (match)
+        {
+            longest = (mapping.first.length() > longest.length()) ? mapping.first : longest;
+        }
+    }
+    return longest;
+}
+
 //return the appropriate route_handler given the provided URI 
 //TODO: this is a little clunky right now...
 std::shared_ptr<route_handler> router::select_handler (std::string uri)
 {
-    for (std::pair<std::string, std::string> mapping : route_map_)
-    {
-	   std::string key = mapping.first;
-       bool test = std::regex_match(uri, std::regex(key));
-       if (test)
-       {
-           if (mapping.second == "echo")
-           {
-               return echo_handler::create_handler(get_handler_config("echo"), server_root_);
-           }
-           else if (mapping.second == "static1")
-           {
-               return static_file_handler::create_handler(get_handler_config("static1"), server_root_);
-           }
-           else if (mapping.second == "static2")
-           {
-               return static_file_handler::create_handler(get_handler_config("static2"), server_root_);
-           }
-           else if (mapping.second == "status") {
-               return status_handler::create_handler(get_handler_config("status"), server_root_);
-           }
-       }
-    }
+    std::string route = longest_prefix_match(uri);
+    std::string handler = get_route_handler(route);
     
-    return default_handler::create_handler(get_handler_config("default"), server_root_);
+    if (handler == "echo")
+    {
+        return echo_handler::create_handler(get_handler_config("echo"), server_root_);
+    }
+    else if (handler == "static1")
+    {
+        return static_file_handler::create_handler(get_handler_config("static1"), server_root_);
+    }
+    else if (handler == "static2")
+    {
+        return static_file_handler::create_handler(get_handler_config("static2"), server_root_);
+    }
+    else if (handler == "status") 
+    {
+        return status_handler::create_handler(get_handler_config("status"), server_root_);
+    }
+    else
+    {
+        return default_handler::create_handler(get_handler_config("default"), server_root_);
+    }
 }
