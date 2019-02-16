@@ -23,7 +23,7 @@ class SessionTest : public ::testing::Test {
     virtual void SetUp() {
       parser.Parse("session/router_config", &out_config);
       config = out_config.statements_[1]->child_block_;
-      std::shared_ptr<router> tmp(new router(config));
+      std::shared_ptr<router> tmp(new router(config, ""));
       rout = tmp;
     }
 };

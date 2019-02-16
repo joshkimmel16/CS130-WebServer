@@ -13,7 +13,7 @@ class router
 {
 public:
     //Methods
-    router (std::shared_ptr<NginxConfig> config); //constructor overload
+    router (std::shared_ptr<NginxConfig> config, std::string server_root); //constructor overload
     bool register_route (std::string uri, std::string handler_name); //register handler for the provided URI
     bool register_routes_from_config (); //register all handlers specified in a config file
     bool register_default_header (std::string h_name, std::string h_value); //bind a default header to all responses from the server
@@ -30,6 +30,7 @@ private:
     std::shared_ptr<NginxConfig> config_;
     std::unordered_map<std::string, std::string> route_map_;
     std::unordered_map<std::string, std::string> headers_;
+    std::string server_root_;
 };
 
 #endif

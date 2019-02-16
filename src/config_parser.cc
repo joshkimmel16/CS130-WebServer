@@ -253,6 +253,7 @@ bool NginxConfigParser::Parse(const char* file_name, NginxConfig* config) {
 
 bool NginxConfig::ParseStatements() {
   int port = -1;
+  std::string root = "";
   bool found_port = false;
 
   // loop through each statement; looking at the tokens
@@ -279,13 +280,20 @@ bool NginxConfig::ParseStatements() {
           }
           else {
             std::cerr << "Bad port number.\n";
-            break;
+            continue;
           }
         }
         catch(std::exception& e) {
           std::cerr << "Failed to convert port to a number.\n";
-          break;
+          continue;
         }      
+      }
+      else if (prev_token == "root") {
+        root = token;
+        if (root == ".") {
+            root = "";
+        }
+        root_ = root;
       }
 
       prev_token = token;
@@ -300,4 +308,8 @@ bool NginxConfig::ParseStatements() {
 
 int NginxConfig::GetPort() {
   return port_;
+}
+
+std::string NginxConfig::GetServerRoot() {
+  return root_;
 }

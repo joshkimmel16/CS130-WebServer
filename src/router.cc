@@ -11,9 +11,10 @@
 #include "status_handler.h"
 
 //constructor takes a config
-router::router (std::shared_ptr<NginxConfig> config)
+router::router (std::shared_ptr<NginxConfig> config, std::string server_root)
 {
     config_ = config;
+    server_root_ = server_root;
 }
 
 //register a handler to a particular URI
@@ -155,21 +156,21 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
        {
            if (mapping.second == "echo")
            {
-               return echo_handler::create_handler(get_handler_config("echo"), "HOLDER");
+               return echo_handler::create_handler(get_handler_config("echo"), server_root_);
            }
            else if (mapping.second == "static1")
            {
-               return static_file_handler::create_handler(get_handler_config("static1"), "HOLDER");
+               return static_file_handler::create_handler(get_handler_config("static1"), server_root_);
            }
            else if (mapping.second == "static2")
            {
-               return static_file_handler::create_handler(get_handler_config("static2"), "HOLDER");
+               return static_file_handler::create_handler(get_handler_config("static2"), server_root_);
            }
            else if (mapping.second == "status") {
-               return status_handler::create_handler(get_handler_config("status"), "HOLDER");
+               return status_handler::create_handler(get_handler_config("status"), server_root_);
            }
        }
     }
     
-    return default_handler::create_handler(get_handler_config("default"), "HOLDER");
+    return default_handler::create_handler(get_handler_config("default"), server_root_);
 }

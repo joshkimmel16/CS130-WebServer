@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
     LOG_INFO << "Parse success.";
 
     int port = config.GetPort();
+    std::string root = config.GetServerRoot();
     boost::asio::io_service io_service; 
 
     // Construct a signal set registered for process termination.
@@ -58,7 +59,7 @@ int main(int argc, char* argv[])
     signals.async_wait(signal_handler);
 
     std::unique_ptr<server> serv(new server(io_service, config, port));
-    bool r = serv->create_router();
+    bool r = serv->create_router(root);
     if (r)
     {
         //serv->register_route("/echo", "echo");

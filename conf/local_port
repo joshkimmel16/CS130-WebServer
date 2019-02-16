@@ -1,4 +1,5 @@
 port 8080;
+root .;
 router {
     handler echo {
         location /echo;

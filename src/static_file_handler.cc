@@ -17,7 +17,7 @@
 //for this route, a config is required that contains a path to the static images
 static_file_handler::static_file_handler (std::shared_ptr<NginxConfig> config, std::string root_path) : route_handler(config, root_path) 
 {
-    path_ = get_static_file_path();
+    path_ = (root_path_ + get_static_file_path());
 }
 
 //overriden factory method to create a new instance

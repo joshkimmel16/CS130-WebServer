@@ -26,9 +26,11 @@ class NginxConfig {
   // returns true iff retrieved expected variables
   bool ParseStatements();
   int GetPort();
+  std::string GetServerRoot();
   
  private:
   int port_;
+  std::string root_;
 };
 
 // The driver that parses a config file and generates an NginxConfig.

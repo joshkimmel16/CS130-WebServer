@@ -14,7 +14,7 @@ class server
 public:
   //Methods
   server(boost::asio::io_service& io_service, NginxConfig config, short port); //constructor
-  bool create_router(); //create a router for the server to use
+  bool create_router(std::string server_root); //create a router for the server to use
   bool start_accept(); //accept an incoming connection
   bool get_status();
   bool register_route(std::string uri, std::string route_handler); //register a route in the router

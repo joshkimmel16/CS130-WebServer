@@ -227,3 +227,30 @@ TEST_F(NginxConfigParserTest, HighPortConfig) {
   EXPECT_FALSE(parse_stmt);
 
 }
+
+TEST_F(NginxConfigParserTest, RootPath) {
+  bool parse_config = parser.Parse("root_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+  EXPECT_EQ(out_config.GetServerRoot(), "/root/path");
+}
+
+TEST_F(NginxConfigParserTest, NoRootPath) {
+  bool parse_config = parser.Parse("no_root_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+  EXPECT_EQ(out_config.GetServerRoot(), "");
+}
+
+TEST_F(NginxConfigParserTest, CurrentDirRootPath) {
+  bool parse_config = parser.Parse("current_root_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+  EXPECT_EQ(out_config.GetServerRoot(), "");
+}

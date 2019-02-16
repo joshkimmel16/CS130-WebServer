@@ -66,7 +66,7 @@ void server::handle_accept(session* new_session,
 }
 
 //create a router for the server to use
-bool server::create_router ()
+bool server::create_router (std::string server_root)
 {
     std::shared_ptr<NginxConfig> output = nullptr;
     for (const auto& statement : config_.statements_) 
@@ -84,7 +84,7 @@ bool server::create_router ()
     
     if (output != nullptr)
     {
-        std::shared_ptr<router> tmp(new router(output));
+        std::shared_ptr<router> tmp(new router(output, server_root));
         router_ = tmp;
         router_->register_routes_from_config();
     }
