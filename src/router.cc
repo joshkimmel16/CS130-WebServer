@@ -21,14 +21,11 @@ router::router (std::shared_ptr<NginxConfig> config, std::string server_root)
 //register a handler to a particular URI
 //inputs are a URI and handler name as strings
 //handler names should correspond to defined handlers
+//prioritize first handler registered for a given uri
 bool router::register_route (std::string uri, std::string handler_name)
 {
     auto it = route_map_.find(uri);
-    if (it != route_map_.end())
-    {
-        it->second = handler_name;
-    }
-    else
+    if (it == route_map_.end())
     {
         std::pair<std::string, std::string> h (uri, handler_name);
         route_map_.insert(h);

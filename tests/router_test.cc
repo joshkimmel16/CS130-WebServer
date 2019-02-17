@@ -131,3 +131,26 @@ TEST_F(RouterTest, LongestPrefix) {
   EXPECT_EQ(res->get_header("Content-Type"), "text/plain"); //route header should be registered appropriately
   EXPECT_EQ(res->get_header("User-Agent"), "testing"); //default header should be registered appropriately
 }
+
+//test that when two handlers are registered to the same location, first one registered takes priority
+//static handler should be invoked
+TEST_F(RouterTest, SameLocationHandlers) {
+  std::unique_ptr<router> out(new router(config, server_root));
+  out->register_route("/echo", "static1");
+  out->register_route("/echo", "echo");
+  out->register_default_header("User-Agent", "testing");
+  
+  std::string input = "GET /echo HTTP/1.1\r\n\r\n";
+  int n = input.length();    
+  char char_array[n+1];   
+  strcpy(char_array, input.c_str());
+  r = char_array;
+  r_size = std::strlen(char_array);
+  std::shared_ptr<request> req(new request(r, r_size));
+  
+  std::shared_ptr<response> res = out->route_request(req);
+  EXPECT_EQ(res->get_status_code(), 404); //should have a 404 status code
+  EXPECT_EQ(res->get_header("Content-Type"), "text/plain"); //route header should be registered appropriately
+  EXPECT_EQ(res->get_header("User-Agent"), "testing"); //default header should be registered appropriately
+  EXPECT_EQ(res->get_body(), "The requested file could not be found!\n"); //body should be default message
+}
