@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include "route_handler.h"
+#include "server_status_recorder.h"
 
 class status_handler : public route_handler
 {
@@ -17,7 +18,7 @@ public:
 private:    
     //Methods
     status_handler (std::shared_ptr<NginxConfig> config, std::string root_path); //constructor overload
-    std::shared_ptr<response> generate_status_response (std::shared_ptr<request> req); //create a status response
+    std::shared_ptr<response> generate_status_response (std::shared_ptr<request> req, std::string body); //create a status response
 };
 
 #endif

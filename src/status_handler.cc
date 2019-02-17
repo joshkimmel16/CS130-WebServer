@@ -3,7 +3,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <unordered_map>
+#include <sstream>
 #include "status_handler.h"
 
 //overriden constructor takes a config
@@ -13,20 +15,48 @@ status_handler::status_handler (std::shared_ptr<NginxConfig> config, std::string
 //overriden factory method to create a new instance
 std::shared_ptr<route_handler> status_handler::create_handler (std::shared_ptr<NginxConfig> config, std::string root_path)
 {
+   
     return std::shared_ptr<status_handler>(new status_handler(config, root_path));
 }
 
 //overridden method in parent class to handle a request
 std::shared_ptr<response> status_handler::handle_request (std::shared_ptr<request> req)
 {
-    return generate_status_response(req);
+    int num_request = server_status_recorder::get_instance().get_url_response_list_size();
+    if(num_request < 0)
+    {
+        //LOG_FATAL << "Something is not right with request status handler";
+        exit(1);
+    }
+    std::vector<std::pair<std::string, unsigned int>> url_response_list = server_status_recorder::get_instance().get_url_response_list();
+    std::ostringstream body;
+    body << "<!DOCTYPE html><html><head></head><body><h1>Server Status</h1><p1>Number of request: "
+         << num_request << "</p1>"
+         << "<table>"
+         << "<tr><th>URL</th><th>Response Code</th></tr>";
+    if(num_request == 0)
+    {
+         body << "</tr><td colspan='2'>No Request</td><tr>";
+    }
+    else
+    {
+         for (auto request : url_response_list)
+         {
+              body << "<tr><td>" << request.first << "</td>"
+                   << "<td>" << request.second << "</td></tr>";
+         }
+    }
+    body << "</table></body></html>";
+
+   return generate_status_response(req, body.str());
 }
 
 //the provided URI did not match any defined handler
 //so send a 404 response with an appropriate message body
-std::shared_ptr<response> status_handler::generate_status_response (std::shared_ptr<request> req)
+std::shared_ptr<response> status_handler::generate_status_response(std::shared_ptr<request> req, std::string body)
 {
     std::shared_ptr<response> resp(new response(200, ("Status message goes here.")));
-    resp->set_header("Content-Type", "text/plain");
+    resp->set_header("Content-Type", "text/html");
+    resp->set_body(body);
     return resp;
 }

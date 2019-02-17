@@ -9,6 +9,7 @@
 #include "static_file_handler.h"
 #include "default_handler.h"
 #include "status_handler.h"
+#include "server_status_recorder.h"
 
 //constructor takes a config
 router::router (std::shared_ptr<NginxConfig> config, std::string server_root)
@@ -80,6 +81,10 @@ std::shared_ptr<response> router::route_request (std::shared_ptr<request> req)
 {
     std::shared_ptr<route_handler> rh = select_handler(req->get_uri());
     std::shared_ptr<response> output = rh->handle_request(req);
+    //record uri and response code
+    server_status_recorder::get_instance().request_recorder(req->get_uri(), output->get_status_code());
+    //
+
     apply_default_headers(output);
     return output;
 }
