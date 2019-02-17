@@ -13,14 +13,22 @@ void server_status_recorder::request_recorder(const std::string& url, const unsi
     url_response_list_.push_back(url_response);
 }
 
+void server_status_recorder::prefix_recorder(const std::pair<std::string, std::string>& prefix_handler_pair)
+{
+    prefix_handler_list_.push_back(prefix_handler_pair);
+}
+
 std::vector<std::pair<std::string, unsigned int>> server_status_recorder::get_url_response_list() const
 {
     return url_response_list_;
+}
+
+std::vector<std::pair<std::string, std::string>> server_status_recorder::get_prefix_handler_list() const
+{
+    return prefix_handler_list_;
 }
 
 int server_status_recorder::get_url_response_list_size()
 {
     return url_response_list_.size();
 }
-
-

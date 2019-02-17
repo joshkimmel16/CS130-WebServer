@@ -28,10 +28,12 @@ std::shared_ptr<response> status_handler::handle_request (std::shared_ptr<reques
         //LOG_FATAL << "Something is not right with request status handler";
         exit(1);
     }
+
     std::vector<std::pair<std::string, unsigned int>> url_response_list = server_status_recorder::get_instance().get_url_response_list();
     std::ostringstream body;
-    body << "<!DOCTYPE html><html><head></head><body><h1>Server Status</h1><p1>Number of request: "
-         << num_request << "</p1>"
+    body << "<!DOCTYPE html><html><head></head><body><h1>Server Status</h1><p>Number of request: "
+         << num_request
+	 << "</p>"
          << "<table>"
          << "<tr><th>URL</th><th>Response Code</th></tr>";
     if(num_request == 0)
@@ -42,13 +44,31 @@ std::shared_ptr<response> status_handler::handle_request (std::shared_ptr<reques
     {
          for (auto request : url_response_list)
          {
-              body << "<tr><td>" << request.first << "</td>"
-                   << "<td>" << request.second << "</td></tr>";
+              body << "<tr><td>" << request.first  << "</td>"
+                   << "<td>"     << request.second << "</td></tr>";
          }
+    }
+    body << "</table>";
+    
+    std::vector<std::pair<std::string, std::string>> prefix_handler_list = server_status_recorder::get_instance().get_prefix_handler_list();
+    body << "<p>URL Prefix and Handler Matching</p>"
+	 << "<table>"
+	 << "<tr><th>Prefix</th><th>Handler</th></tr>";
+    if(prefix_handler_list.empty())
+    {
+	 body << "</tr><td colspan= '2'>Empty</td><tr>";
+    }
+    else
+    {
+	 for (auto pre : prefix_handler_list)
+	 {
+              body << "<tr><td>" << pre.first  << "</td>"
+		   << "<td>"     << pre.second << "</td></tr>";
+	 }
     }
     body << "</table></body></html>";
 
-   return generate_status_response(req, body.str());
+    return generate_status_response(req, body.str());
 }
 
 //the provided URI did not match any defined handler

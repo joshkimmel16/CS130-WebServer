@@ -28,6 +28,8 @@ bool router::register_route (std::string uri, std::string handler_name)
     if (it == route_map_.end())
     {
         std::pair<std::string, std::string> h (uri, handler_name);
+	//record uri prefix and handler name pair
+	server_status_recorder::get_instance().prefix_recorder(h);
         route_map_.insert(h);
     }
 }
