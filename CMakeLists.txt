@@ -80,6 +80,8 @@ add_executable(static_file_handler_test tests/static_file_handler_test.cc)
 target_link_libraries(static_file_handler_test static_file_handler request response config_parser gtest_main)
 add_executable(default_handler_test tests/default_handler_test.cc)
 target_link_libraries(default_handler_test default_handler request response config_parser gtest_main)
+add_executable(status_handler_test tests/status_handler_test.cc)
+target_link_libraries(status_handler_test status_handler server_status_recorder request response config_parser gtest_main)
 add_executable(router_test tests/router_test.cc)
 target_link_libraries(router_test router echo_handler static_file_handler default_handler status_handler request response config_parser server_status_recorder  gtest_main)
 
@@ -95,6 +97,7 @@ gtest_discover_tests(server_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 gtest_discover_tests(echo_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(static_file_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(default_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(status_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(router_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Integration test for simple GET request with no body or extra headers
@@ -123,4 +126,4 @@ add_test(NAME IntegrationTest.Static2
 # include(cmake/CodeCoverageReportConfig.cmake)
 # generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server_main server session config_parser request response router echo_handler static_file_handler default_handler status_handler server_status_recorder  logger TESTS config_parser_test request_test response_test session_test server_test router_test echo_handler_test static_file_handler_test default_handler_test)
+generate_coverage_report(TARGETS server_main server session config_parser request response router echo_handler static_file_handler default_handler status_handler server_status_recorder  logger TESTS config_parser_test request_test response_test session_test server_test router_test echo_handler_test static_file_handler_test default_handler_test status_handler_test)
