@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <regex>
+#include <mutex>
 #include "route_handler.h"
 
 class router
@@ -32,6 +33,10 @@ private:
     std::unordered_map<std::string, std::string> route_map_;
     std::unordered_map<std::string, std::string> headers_;
     std::string server_root_;
+    
+    mutable std::mutex route_map_lock_;
+    mutable std::mutex header_lock_;
+    mutable std::mutex config_lock_;
 };
 
 #endif

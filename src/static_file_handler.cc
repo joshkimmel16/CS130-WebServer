@@ -44,6 +44,8 @@ std::shared_ptr<response> static_file_handler::handle_request (std::shared_ptr<r
 //parse config to retrieve the static file path
 std::string static_file_handler::get_static_file_path ()
 {
+    std::lock_guard<std::mutex> lock(config_lock_);
+    
     std::string output;
     for (const auto& statement : config_->statements_) 
     {

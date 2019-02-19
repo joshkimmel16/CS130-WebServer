@@ -4,7 +4,7 @@
 
 #include <string>
 #include <vector>
-
+#include <mutex>
 
 class server_status_recorder
 {
@@ -32,6 +32,9 @@ private:
     //list of request url and response code
     std::vector<std::pair<std::string, unsigned int>> url_response_list_;
     std::vector<std::pair<std::string, std::string>> prefix_handler_list_;
+    
+    mutable std::mutex response_list_lock_;
+    mutable std::mutex prefix_list_lock_;
 };
 
 #endif

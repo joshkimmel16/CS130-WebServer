@@ -24,19 +24,25 @@ router::router (std::shared_ptr<NginxConfig> config, std::string server_root)
 //prioritize first handler registered for a given uri
 bool router::register_route (std::string uri, std::string handler_name)
 {
+    std::lock_guard<std::mutex> lock(route_map_lock_);
+    
     auto it = route_map_.find(uri);
     if (it == route_map_.end())
     {
         std::pair<std::string, std::string> h (uri, handler_name);
-	//record uri prefix and handler name pair
-	server_status_recorder::get_instance().prefix_recorder(h);
+        //record uri prefix and handler name pair
+        server_status_recorder::get_instance().prefix_recorder(h);
         route_map_.insert(h);
     }
+    
+    return true;
 }
 
 //use the provided configuration file to register all routes
 bool router::register_routes_from_config ()
 {
+    std::lock_guard<std::mutex> lock(config_lock_);
+    
     for (const auto& statement : config_->statements_) 
     {
         //pick out all handler configurations
@@ -56,12 +62,16 @@ bool router::register_routes_from_config ()
             }
         }
     }
+    
+    return true;
 }
 
 //capture a default HTTP header to apply to all responses from the server
 //inputs are strings for the header name and value
 bool router::register_default_header (std::string header_name, std::string header_value)
-{
+{   
+    std::lock_guard<std::mutex> lock(header_lock_);
+    
     auto it = headers_.find(header_name);
     if (it != headers_.end())
     {
@@ -72,6 +82,8 @@ bool router::register_default_header (std::string header_name, std::string heade
         std::pair<std::string, std::string> h (header_name, header_value);
         headers_.insert(h);
     }
+    
+    return true;
 }
 
 //main method to route the request to a particular handler and return the generated response
@@ -90,7 +102,9 @@ std::shared_ptr<response> router::route_request (std::shared_ptr<request> req)
 
 //get a specific route handler by URI
 std::string router::get_route_handler (std::string uri)
-{
+{    
+    std::lock_guard<std::mutex> lock(route_map_lock_);
+    
     std::unordered_map<std::string, std::string>::const_iterator found = route_map_.find(uri);
     if (!(found == route_map_.end()))
     {
@@ -104,7 +118,9 @@ std::string router::get_route_handler (std::string uri)
 
 //get a specific header by name
 std::string router::get_header (std::string name)
-{
+{    
+    std::lock_guard<std::mutex> lock(header_lock_);
+    
     std::unordered_map<std::string, std::string>::const_iterator found = headers_.find(name);
     if (!(found == headers_.end()))
     {
@@ -119,6 +135,8 @@ std::string router::get_header (std::string name)
 //get a nested config from the master config for a specific route handler
 std::shared_ptr<NginxConfig> router::get_handler_config (std::string handler_name)
 {
+    std::lock_guard<std::mutex> lock(config_lock_);
+    
     std::shared_ptr<NginxConfig> output;
     for (const auto& statement : config_->statements_) 
     {
@@ -141,6 +159,8 @@ std::shared_ptr<NginxConfig> router::get_handler_config (std::string handler_nam
 //apply the default headers for the server to the given response
 bool router::apply_default_headers (std::shared_ptr<response> res)
 {
+    std::lock_guard<std::mutex> lock(header_lock_);
+    
     for (std::pair<std::string, std::string> header : headers_)
     {
 	   res->set_header(header.first, header.second);
@@ -151,6 +171,8 @@ bool router::apply_default_headers (std::shared_ptr<response> res)
 //pick registered route that is best match for given URI
 std::string router::longest_prefix_match (std::string uri)
 {
+    std::lock_guard<std::mutex> lock(route_map_lock_);
+    
     std::string longest = "";
     unsigned int current_count = 0;
     for (std::pair<std::string, std::string> mapping : route_map_)
