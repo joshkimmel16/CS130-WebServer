@@ -27,9 +27,11 @@ class NginxConfig {
   bool ParseStatements();
   int GetPort();
   std::string GetServerRoot();
+  unsigned int GetThreadCount();
   
  private:
   int port_;
+  unsigned int threadCount_;
   std::string root_;
 };
 

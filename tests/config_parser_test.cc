@@ -254,3 +254,39 @@ TEST_F(NginxConfigParserTest, CurrentDirRootPath) {
   EXPECT_TRUE(parse_stmt);
   EXPECT_EQ(out_config.GetServerRoot(), "");
 }
+
+TEST_F(NginxConfigParserTest, ValidThreadCount) {
+  bool parse_config = parser.Parse("tc_valid_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+  EXPECT_EQ(out_config.GetThreadCount(), 20);
+}
+
+TEST_F(NginxConfigParserTest, NonNumberThreadCount) {
+  bool parse_config = parser.Parse("tc_NoNumber_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+  EXPECT_EQ(out_config.GetThreadCount(), 10);
+}
+
+TEST_F(NginxConfigParserTest, ZeroThreadCount) {
+  bool parse_config = parser.Parse("tc_zero_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+  EXPECT_EQ(out_config.GetThreadCount(), 10);
+}
+
+TEST_F(NginxConfigParserTest, MissingThreadCount) {
+  bool parse_config = parser.Parse("tc_missing_config", &out_config);
+  bool parse_stmt = out_config.ParseStatements();
+
+  EXPECT_TRUE(parse_config);
+  EXPECT_TRUE(parse_stmt);
+  EXPECT_EQ(out_config.GetThreadCount(), 10);
+}

@@ -13,13 +13,20 @@
 
 using boost::asio::ip::tcp;
 
+//run the new session in a thread from the thread pool
+void session_thread(int thread_id, session* new_session)
+{
+    new_session->start();
+}
+
 //constructor takes a Boost io_service object, an NginxConfig object, and a port
 //and executes the start_accept private method
-server::server(boost::asio::io_service& io_service, NginxConfig config, short port)
+server::server(boost::asio::io_service& io_service, NginxConfig config, short port, unsigned int threads)
 : io_service_(io_service),
   config_(config),
   isRunning(false),
-  acceptor_(io_service, tcp::endpoint(tcp::v4(), port)) 
+  pool_(threads),
+  acceptor_(io_service, tcp::endpoint(tcp::v4(), port))
 {}
 
 //start_accept establishes and blank session binds incoming
@@ -55,7 +62,7 @@ void server::handle_accept(session* new_session,
 {
     if (!error) 
     {
-      new_session->start();
+        pool_.push(session_thread, new_session);
     }
     else
     {
@@ -101,4 +108,12 @@ bool server::register_route(std::string uri, std::string route_handler)
 bool server::register_default_header(std::string header_name, std::string header_value)
 {
     return router_->register_default_header(header_name, header_value);
+}
+
+//method to terminate all active/pending sessions in the thread pool
+//by convention, we are forcing all currently running threads to terminate immediately
+bool server::stop_all_sessions ()
+{
+    pool_.stop(false);
+    return true;
 }

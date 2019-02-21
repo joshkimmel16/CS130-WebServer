@@ -2,6 +2,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "ctpl.h"
+
 #include "session.h"
 #include "config_parser.h"
 #include "logger.h"
@@ -13,12 +15,13 @@ class server
 {
 public:
   //Methods
-  server(boost::asio::io_service& io_service, NginxConfig config, short port); //constructor
+  server(boost::asio::io_service& io_service, NginxConfig config, short port, unsigned int threads); //constructor
   bool create_router(std::string server_root); //create a router for the server to use
   bool start_accept(); //accept an incoming connection
   bool get_status();
   bool register_route(std::string uri, std::string route_handler); //register a route in the router
   bool register_default_header(std::string header_name, std::string header_value); //reguster a default header in the router
+  bool stop_all_sessions (); //stop all threads in thread pool
 private:
   //Methods
   void handle_accept(session* new_session, const boost::system::error_code& error); //handle async accept
@@ -29,6 +32,7 @@ private:
   bool isRunning = false;
   NginxConfig config_;
   std::shared_ptr<router> router_;
+  ctpl::thread_pool pool_;
 };
 
 #endif

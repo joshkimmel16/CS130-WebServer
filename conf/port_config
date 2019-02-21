@@ -1,5 +1,6 @@
 port 80;
 root .;
+threadCount 10;
 router {
     handler echo {
         location /echo;

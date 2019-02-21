@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
 
     int port = config.GetPort();
     std::string root = config.GetServerRoot();
+    unsigned int threadCount = config.GetThreadCount();
     boost::asio::io_service io_service; 
 
     // Construct a signal set registered for process termination.
@@ -58,7 +59,7 @@ int main(int argc, char* argv[])
     // Start an asynchronous wait for one of the signals to occur.
     signals.async_wait(signal_handler);
 
-    std::unique_ptr<server> serv(new server(io_service, config, port));
+    std::unique_ptr<server> serv(new server(io_service, config, port, threadCount));
     bool r = serv->create_router(root);
     if (r)
     {

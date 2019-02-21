@@ -255,6 +255,7 @@ bool NginxConfig::ParseStatements() {
   int port = -1;
   std::string root = "";
   bool found_port = false;
+  unsigned int threads = 10;
 
   // loop through each statement; looking at the tokens
   for (const auto& statement : statements_) {
@@ -295,6 +296,23 @@ bool NginxConfig::ParseStatements() {
         }
         root_ = root;
       }
+      else if (prev_token == "threadCount") {
+          try {
+             threads = std::stoi(token);
+             if (threads > 0) {
+                 threadCount_ = threads;
+             }
+             else {
+                std::cerr << "Thread count must be greater than 0.\n";
+                threads = 10;
+                continue;
+             }
+          }
+          catch(std::exception& e) {
+            std::cerr << "Failed to convert thread count to a number.\n";
+            continue;
+          }      
+      }
 
       prev_token = token;
     }
@@ -303,6 +321,9 @@ bool NginxConfig::ParseStatements() {
   if (!found_port) {
     std::cerr << "No valid port number found.\n";
   }
+  threadCount_ = threads;
+  root_ = root;
+  
   return found_port;
 }
 
@@ -312,4 +333,8 @@ int NginxConfig::GetPort() {
 
 std::string NginxConfig::GetServerRoot() {
   return root_;
+}
+
+unsigned int NginxConfig::GetThreadCount() {
+  return threadCount_;
 }
