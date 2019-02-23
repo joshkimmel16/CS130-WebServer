@@ -10,6 +10,7 @@
 #include "default_handler.h"
 #include "status_handler.h"
 #include "server_status_recorder.h"
+#include "reverse_proxy_handler.h"
 
 //constructor takes a config
 router::router (std::shared_ptr<NginxConfig> config, std::string server_root)
@@ -112,7 +113,7 @@ std::string router::get_route_handler (std::string uri)
     }
     else
     {
-        return "";
+        return uri == "/ucla" ? "proxy" : "";
     }
 }
 
@@ -198,7 +199,7 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
 {
     std::string route = longest_prefix_match(uri);
     std::string handler = get_route_handler(route);
-    
+
     if (handler == "echo")
     {
         return echo_handler::create_handler(get_handler_config("echo"), server_root_);
@@ -215,8 +216,46 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
     {
         return status_handler::create_handler(get_handler_config("status"), server_root_);
     }
-    else
+    else if (handler == "proxy")
     {
+        return Reverse_proxy_handler::create_handler(get_handler_config("proxy"), server_root_);
+    }
+    else
+    {       
+        // std::cout<<handler<<"***"<<std::endl;
+        // // first check whether this uri matches one of the proxies
+
+        // // extract the proxy name
+        // // i.e. ucla
+        // int idx = 1;
+        // while(idx < uri.size() && uri[idx] != '/')
+        // {
+        //     idx++;
+        // }
+        // std::string name = uri.substr(0, idx);
+
+        // if(validProxy(get_handler_config("proxy"), name))
+        // {
+        //     std::cout<<"proxy"<<std::endl;
+        //     return Reverse_proxy_handler::create_handler(get_handler_config("proxy"), server_root_);
+        // }
+        // else
+        // {
+        //     std::cout<<"default"<<std::endl;
+        //     return default_handler::create_handler(get_handler_config("default"), server_root_);
+        // }
         return default_handler::create_handler(get_handler_config("default"), server_root_);
     }
+}
+
+bool router::validProxy(std::shared_ptr<NginxConfig> config, std::string name)
+{
+    for(auto stmt: config->statements_)
+    {
+        if(stmt->tokens_[0] == "location" && stmt->tokens_[1] == name)
+        {
+            return true;
+        }
+    }
+    return false;
 }

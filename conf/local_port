@@ -15,4 +15,8 @@ router {
         location /static2;
         root resources/static2;
     }
+    handler proxy {
+        location /ucla;
+        root http://www.ucla.edu;
+    }
 }

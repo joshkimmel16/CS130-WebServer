@@ -99,6 +99,7 @@ TEST_F(RouterTest, Default) {
   int n = input.length();    
   char char_array[n+1];   
   strcpy(char_array, input.c_str());
+  char_array[n] = '\0';
   r = char_array;
   r_size = std::strlen(char_array);
   std::shared_ptr<request> req(new request(r, r_size));

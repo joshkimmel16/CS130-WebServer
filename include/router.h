@@ -27,7 +27,7 @@ private:
     bool apply_default_headers (std::shared_ptr<response> res); //apply default headers to a given response
     std::shared_ptr<route_handler> select_handler (std::string uri); //retrieve the appropriate handler object given a URI
     std::string longest_prefix_match (std::string uri); //pick registered route that is best match for given URI
-    
+    bool validProxy (std::shared_ptr<NginxConfig> config, std::string name);
     //Attributes
     std::shared_ptr<NginxConfig> config_;
     std::unordered_map<std::string, std::string> route_map_;
