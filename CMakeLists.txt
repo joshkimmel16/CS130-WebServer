@@ -124,8 +124,12 @@ add_test(NAME IntegrationTest.Static2
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -m GET -u /static2/mytext.txt -o Integration/static2_text
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
     
-
-
+# Integration test for multi-threading
+# TODO: enable once multithreading is properly implemented
+#add_test(NAME IntegrationTest.Threading
+    #COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration_threading.py
+    #WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    
 # TODO(!): Update with target/test targets
 # include(cmake/CodeCoverageReportConfig.cmake)
 # generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)

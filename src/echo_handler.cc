@@ -1,9 +1,5 @@
 //A handler for HTTP requests that echoes the body of the request in the response
 
-#include <cstdlib>
-#include <iostream>
-#include <string>
-#include <unordered_map>
 #include "echo_handler.h"
 
 //overriden constructor takes a config
@@ -26,6 +22,12 @@ std::shared_ptr<response> echo_handler::handle_request (std::shared_ptr<request>
 //since validation occurs earlier, always respond with a 200
 std::shared_ptr<response> echo_handler::generate_echo_response (std::shared_ptr<request> req)
 {
+    std::string header_check = req->get_header("Thread-Sleep");
+    if (header_check != "")
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(5));
+    }
+    
     std::shared_ptr<response> resp(new response(200, std::string(req->get_raw_request())));
     resp->set_header("Content-Type", "text/plain");
     return resp;
