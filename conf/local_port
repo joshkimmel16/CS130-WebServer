@@ -17,7 +17,8 @@ router {
         root resources/static2;
     }
     handler proxy {
+        port 8080; # if port number is missing here, the default should be 8080
         location /ucla;
-        root http://www.ucla.edu;
+        root www.ucla.edu;
     }
 }

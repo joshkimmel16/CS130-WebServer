@@ -4,7 +4,10 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
 #include "route_handler.h"
+#include "logger.h"
 
 class Reverse_proxy_handler : public route_handler
 {
@@ -14,5 +17,9 @@ public:
     // static std::unordered_map<std::string, std::string> get_proxies (std::shared_ptr<NginxConfig> config);
 private:
     Reverse_proxy_handler (std::shared_ptr<NginxConfig> config, std::string root_path); //constructor overload
-    // static std::unordered_map<std::string, std::string> location2proxy;
-};
+    std::string sendGetRequest(char* host, char* path);
+    std::string constructGetRequest(std::string uri);
+    
+    std::unordered_map<std::string, std::string> location2proxy;
+    std::string mime_type;
+}; 
