@@ -19,7 +19,10 @@ private:
     Reverse_proxy_handler (std::shared_ptr<NginxConfig> config, std::string root_path); //constructor overload
     std::string sendGetRequest(char* host, char* path);
     std::string constructGetRequest(std::string uri);
+    char* extractRedirectedHost(std::string res);
+    std::string sendGetRequestToRedirectedSite(char* host, char* path);
     
     std::unordered_map<std::string, std::string> location2proxy;
     std::string mime_type;
+    bool redirect = false;
 }; 

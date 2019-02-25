@@ -20,5 +20,7 @@ router {
         port 8080; # if port number is missing here, the default should be 8080
         location /ucla;
         root www.ucla.edu;
+        location /wiki;
+        root www.wikipedia.com;
     }
 }

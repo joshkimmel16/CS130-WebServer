@@ -58,7 +58,8 @@ bool router::register_routes_from_config ()
                 {
                     std::string uri = s->tokens_[1];
                     register_route(uri, handlerKey);
-                    break;
+                    // here we cannot break since there might be multiple proxies.
+                    // break;
                 }
             }
         }
@@ -113,7 +114,8 @@ std::string router::get_route_handler (std::string uri)
     }
     else
     {
-        return uri == "/ucla" ? "proxy" : "";
+        std::shared_ptr<NginxConfig> proxy_config = get_handler_config("proxy");
+        return proxy_config != NULL && validProxy(proxy_config, uri) ? "proxy" : "";
     }
 }
 

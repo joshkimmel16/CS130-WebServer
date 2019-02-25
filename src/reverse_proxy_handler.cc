@@ -31,9 +31,22 @@ std::shared_ptr<route_handler> Reverse_proxy_handler::create_handler (std::share
 std::shared_ptr<response> Reverse_proxy_handler::handle_request (std::shared_ptr<request> req)
 {
     std::string response_str = constructGetRequest(req->get_uri());
-    std::shared_ptr<response> resp(new response(200, response_str));
-    resp->set_header("Content-Type", mime_type);
-    return resp;
+    if(redirect)
+    {
+        // behaves like /echo
+        std::shared_ptr<response> resp(new response(200, std::string(req->get_raw_request())));
+        resp->set_header("Content-Type", "text/plain");
+        resp->set_header("Content-Length", std::to_string(resp->get_body().length()));
+        return resp;
+    }
+    else 
+    {
+        std::shared_ptr<response> resp(new response(200, response_str));
+        resp->set_header("Content-Type", mime_type);
+        resp->set_header("Content-Length", std::to_string(response_str.length()));
+        BOOST_LOG_TRIVIAL(info) << "Content-Length: " << resp->get_body().length();
+        return resp;
+    }
 }
 
 
@@ -48,7 +61,7 @@ std::string Reverse_proxy_handler::sendGetRequest(char* host, char* path)
  
     tcp::socket socket(io_service);
     boost::asio::connect(socket, iter);
-    
+    BOOST_LOG_TRIVIAL(info) << "host is : " << host;
     // construct request header
     boost::asio::streambuf request;
     std::ostream request_stream(&request);
@@ -95,7 +108,8 @@ std::string Reverse_proxy_handler::sendGetRequest(char* host, char* path)
         }
         else if (header.find("Content-Type: ") == 0) {
             int offset = 14; // here 14 is the length of string "Content-Type: ", we need the type after this string
-            mime_type = header.substr(offset); 
+            int end = header.find(";");
+            mime_type = header.substr(offset, end - offset); 
         }
     }
     
@@ -126,7 +140,16 @@ std::string Reverse_proxy_handler::sendGetRequest(char* host, char* path)
     is.unsetf(std::ios_base::skipws);
     std::string sz;
     sz.append(std::istream_iterator<char>(is), std::istream_iterator<char>());
-    
+    // BOOST_LOG_TRIVIAL(info) << sz;
+    if(status_code == 301 || status_code == 302)
+    {
+        // return sendGetRequestToRedirectedSite(extractRedirectedHost(sz), path);
+        redirect = true;
+    }
+    // else
+    // {
+    //     return sz;
+    // }
     return sz;
 }
 
@@ -150,4 +173,110 @@ std::string Reverse_proxy_handler::constructGetRequest(std::string uri)
     BOOST_LOG_TRIVIAL(info) << "urlPath: " << urlPath;
 
     return sendGetRequest(host, urlPath);
+}
+
+char* Reverse_proxy_handler::extractRedirectedHost(std::string res)
+{
+    std::string http = std::string("http://");
+    int start = res.find(http);
+    start += http.length();
+    int end = start;
+    while(end < res.length() && res[end] != '/' && res[end] != '"')
+    {
+        end++;
+    }
+    std::string host_str = res.substr(start, end - start);
+    char* host = new char[host_str.size() + 1];
+    strcpy(host, host_str.c_str());
+    return host;
+}
+
+std::string Reverse_proxy_handler::sendGetRequestToRedirectedSite(char* host, char* path){
+    boost::asio::io_service io_service;
+    
+    tcp::resolver resolver(io_service);
+    tcp::resolver::query query(host, "http");
+    tcp::resolver::iterator iter = resolver.resolve(query);
+ 
+    tcp::socket socket(io_service);
+    boost::asio::connect(socket, iter);
+    BOOST_LOG_TRIVIAL(info) << "Redirected host is : " << host;
+    // construct request header
+    boost::asio::streambuf request;
+    std::ostream request_stream(&request);
+    request_stream << "GET " << path << " HTTP/1.1\r\n";
+    request_stream << "Host: " << host << "\r\n";
+    request_stream << "Accept: */*\r\n";
+    request_stream << "Connection: close\r\n\r\n";
+    
+    boost::asio::write(socket, request);
+    
+    boost::asio::streambuf response;
+    boost::asio::read_until(socket, response, "\r\n");
+    
+    // check whether response is ok
+    std::istream response_stream(&response);
+    std::string http_version;
+    response_stream >> http_version;
+    unsigned int status_code;
+    response_stream >> status_code;
+    std::string status_message;
+    getline(response_stream, status_message);
+    if (!response_stream || http_version.substr(0, 5) != "HTTP/")
+    {
+        BOOST_LOG_TRIVIAL(info) << "Invalid response";
+    }
+    if (status_code != 200)
+    {
+        BOOST_LOG_TRIVIAL(info) << "response status code: " << status_code;
+    }
+    
+    // read response header
+    boost::asio::read_until(socket, response, "\r\n\r\n");
+    
+    std::string header;
+    int len = 0;
+    while (getline(response_stream, header) && header != "\r")
+    {
+        if (header.find("Content-Length: ") == 0) {
+            std::stringstream stream;
+            int offset = 16; // here 16 is the length of string "Content-Length: ", we need the number after this string
+            stream << header.substr(offset); 
+            stream >> len;
+        }
+        else if (header.find("Content-Type: ") == 0) {
+            int offset = 14; // here 14 is the length of string "Content-Type: ", we need the type after this string
+            int end = header.find(";");
+            mime_type = header.substr(offset, end - offset); 
+        }
+    }
+    
+    long size = response.size();
+    
+    boost::system::error_code error;  // read error
+    
+    // keep reading until the file ends
+    while (boost::asio::read(socket, response, boost::asio::transfer_at_least(1), error))
+    {
+        // get response length
+        size = response.size();
+        if (len != 0) {
+            BOOST_LOG_TRIVIAL(info) << size << "  Byte  " << (size * 100) / len << "%";
+        }
+    }
+ 
+    // if not reach the end of the file, throw an error
+    if (error != boost::asio::error::eof)
+    {
+        throw boost::system::system_error(error);
+    }
+    
+    BOOST_LOG_TRIVIAL(info) << size << " Contents downloaded.";
+    
+    // convert streambuf to string
+    std::istream is(&response);
+    is.unsetf(std::ios_base::skipws);
+    std::string sz;
+    sz.append(std::istream_iterator<char>(is), std::istream_iterator<char>());
+    return sz;
 }

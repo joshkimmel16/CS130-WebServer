@@ -86,7 +86,7 @@ target_link_libraries(status_handler_test status_handler server_status_recorder 
 add_executable(router_test tests/router_test.cc)
 target_link_libraries(router_test logger router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler reverse_proxy_handler request response config_parser server_status_recorder  gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 add_executable(reverse_proxy_handler_test tests/reverse_proxy_handler_test.cc)
-target_link_libraries(reverse_proxy_handler_test reverse_proxy_handler server_status_recorder request response config_parser gtest_main)
+target_link_libraries(reverse_proxy_handler_test reverse_proxy_handler server_status_recorder request response config_parser gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 
 
 
