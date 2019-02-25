@@ -42,6 +42,9 @@ create_curl_request() {
 create_nc_request() {
     REQ_COMMAND="nc ${REQ_HOST} ${SERVER_PORT}"
 }
+ 
+
+
 
 #variable declarations with default values
 TEST_DIR=$(pwd)
@@ -63,8 +66,36 @@ SERVER_PORT="8080"
 
 EXPECTED_OUTPUT="Integration/expected_output"
 
+
+test_reverse_proxy() {
+  TEMP="temp_dir"
+  mkdir $TEMP
+  echo `pwd`  
+  
+  $SERVER_PATH "Integration/config_ucla" > /dev/null 2>1 &
+  PID=$!
+  
+  sleep .1
+
+  curl http://localhost:8080/ucla/images/logo-ucla.svg > $TEMP"/proxy_integration_test_actual.txt"
+  cmp $TEMP"/proxy_integration_test_actual.txt" "Integration/proxy_integration_test_expected.txt"
+  rc=$?;
+
+  kill $PID
+  rm -r $TEMP
+
+  if [ $rc -ne 0 ]
+  then 
+      echo "Reverse proxy test failed ..."
+      exit 1
+  else
+      echo "Successfully performed reverse proxy test"
+      exit 0
+  fi 
+}
+
 #capture arguments to the script
-while getopts "hc:np:t:u:m:d:b:o:" opt; do
+while getopts "hc:np:t:u:m:d:b:o:r" opt; do
   case $opt in
     h)
       print_usage
@@ -95,6 +126,9 @@ while getopts "hc:np:t:u:m:d:b:o:" opt; do
       ;;
     o)
       EXPECTED_OUTPUT=$OPTARG
+      ;;
+    r)
+      test_reverse_proxy
       ;;
     \?)
       echo "Invalid option (-$OPTARG)"
@@ -142,5 +176,7 @@ else
     echo "The web server failed to start!"
     exit 1
 fi
+
+
 
 exit 0

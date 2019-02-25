@@ -1,0 +1,8 @@
+port 8080;
+router {
+    handler proxy {
+        port 80; # if port number is missing here, the default should be 8080
+        location /ucla;
+        root brand.ucla.edu;
+    }
+}

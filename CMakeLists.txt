@@ -124,6 +124,11 @@ add_test(NAME IntegrationTest.Static1
 add_test(NAME IntegrationTest.Static2
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -c Integration/config_8080 -p 8080 -m GET -u /static2/mytext.txt -o Integration/static2_text
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+
+# Integration test for reverse proxy
+add_test(NAME IntegrationTest.ReverseProxy
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tests/integration.sh -r
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
     
 # Integration test for multi-threading
 # TODO: enable once multithreading is properly implemented
