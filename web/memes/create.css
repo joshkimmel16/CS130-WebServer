@@ -1,0 +1,62 @@
+/*general styling*/
+.hide {
+    display: none !important;
+}
+
+.txt {
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+/*styling for header of page*/
+.header {
+    width: 100%;
+    height: 10%;
+    text-align: center;
+}
+
+/*styling for form*/
+form {
+    width: 100%;
+}
+
+/*styling for image selection section*/
+.image {
+    width: 100%;
+    height: 40%;
+    margin-top: 5%;
+}
+
+/*styling for caption selection section*/
+.caption {
+    width: 100%;
+    height: 40%;
+    margin-top: 5%;
+}
+
+/*styling for submit section*/
+.submit {
+    width: 100%;
+    height: 10%;
+    margin-top: 5%;
+}
+
+/*styling for submit section*/
+.sectionHead {
+    margin-left: 5%;
+    width: 100%;
+}
+
+/*styling for submit section*/
+.sectionBody {
+    margin-left: 5%;
+    width: 100%;
+}
+
+.form-control {
+    width: 25%;
+}
+
+.btn {
+    margin-left: 45%;
+    width: 10%;
+}

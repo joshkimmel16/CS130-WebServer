@@ -214,6 +214,10 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
     {
         return static_file_handler::create_handler(get_handler_config("static2"), server_root_);
     }
+    else if (handler == "webMeme")
+    {
+        return static_file_handler::create_handler(get_handler_config("webMeme"), server_root_);
+    }
     else if (handler == "status") 
     {
         return status_handler::create_handler(get_handler_config("status"), server_root_);

@@ -13,7 +13,10 @@ const std::unordered_map<std::string, std::string> mime_types({
    { ".jpeg", "image/jpeg" },
    { ".zip", "application/zip" },
    { ".json", "application/json" },
-   { ".xml", "application/xml" }
+   { ".xml", "application/xml" },
+   { ".css", "text/css" },
+   { ".js", "application/javascript" },
+   { ".ico", "image/x-icon" }
 });
 
 #endif
