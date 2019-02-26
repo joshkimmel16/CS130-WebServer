@@ -54,6 +54,7 @@ add_library(server_status_recorder src/server_status_recorder.cc)
 add_library(router src/router.cc)
 add_library(logger src/logger.cc)
 add_library(reverse_proxy_handler src/reverse_proxy_handler.cc)
+add_library(meme_handler src/meme_handler.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
