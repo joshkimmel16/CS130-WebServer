@@ -42,5 +42,4 @@ TEST_F(ServerTest, StopPool) {
     EXPECT_TRUE(serv->register_route("/test", "testing"));
     EXPECT_TRUE(serv->register_default_header("header", "value"));
     EXPECT_TRUE(serv->start_accept());
-    EXPECT_TRUE(serv->stop_all_sessions());
 }

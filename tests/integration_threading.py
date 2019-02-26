@@ -40,6 +40,9 @@ t2 = threading.Thread(target=MakeRequest, args=(options_no_data,))
 #these arguments are hardcoded since this is a very specific threading test
 p = subprocess.Popen(["../build/bin/server_main", "Integration/config_8080"])
 
+# give the server some time to start up
+time.sleep(1)
+
 #start threads
 #add small sleep to ensure that t1 request is definitely made before t2 request
 t1.start()

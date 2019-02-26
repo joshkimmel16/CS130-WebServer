@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
         throw std::runtime_error("Could not create router! Please ensure that the config file has a router config in it.");
     }
     LOG_INFO << "server runs successfullly";
-    io_service.run();
+    serv->run();
   }
   catch (std::exception& e)
   {
