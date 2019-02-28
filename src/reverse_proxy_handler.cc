@@ -20,6 +20,10 @@ Reverse_proxy_handler::Reverse_proxy_handler(std::shared_ptr<NginxConfig> config
         {
             location2proxy.insert(std::make_pair(location, stmt->tokens_[1]));
         }
+        else if(stmt->tokens_[0] == "port")
+        {
+            port_num = atoi(stmt->tokens_[1].c_str());
+        }
     }
 }
 
@@ -56,7 +60,7 @@ std::string Reverse_proxy_handler::sendGetRequest(char* host, char* path)
     boost::asio::io_service io_service;
     
     tcp::resolver resolver(io_service);
-    tcp::resolver::query query(host, "http");
+    tcp::resolver::query query(host, std::to_string(port_num));
     tcp::resolver::iterator iter = resolver.resolve(query);
  
     tcp::socket socket(io_service);
@@ -195,7 +199,7 @@ std::string Reverse_proxy_handler::sendGetRequestToRedirectedSite(char* host, ch
     boost::asio::io_service io_service;
     
     tcp::resolver resolver(io_service);
-    tcp::resolver::query query(host, "http");
+    tcp::resolver::query query(host, std::to_string(port_num));
     tcp::resolver::iterator iter = resolver.resolve(query);
  
     tcp::socket socket(io_service);

@@ -24,5 +24,6 @@ private:
     
     std::unordered_map<std::string, std::string> location2proxy;
     std::string mime_type;
+    int port_num;
     bool redirect = false;
 }; 
