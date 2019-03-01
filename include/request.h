@@ -18,6 +18,7 @@ public:
   std::string get_uri(); //retrieve the URI for the request
   std::string get_header(std::string name); //retrieve a request header by name
   std::string get_body(); //retrieve the request body
+  std::string get_query_string_param(std::string name); //retrieve query string parameter
   bool is_valid(); //retrieve whether or not the request is valid for HTTP
 private:
   //Methods
@@ -25,6 +26,7 @@ private:
   bool parse_status_line(std::string req); //extract status line info from raw
   bool parse_headers(std::string req); //extract headers from raw
   bool parse_body(std::string req); //extract body from raw
+  bool parse_query_string(); //extract query string from URI
 
   //Attributes
   char* raw_request_;
@@ -33,6 +35,7 @@ private:
   std::string uri_;
   std::unordered_map<std::string, std::string> request_headers_;
   std::string request_body_;
+  std::unordered_map<std::string, std::string> query_string_;
   bool valid_;
 };
 

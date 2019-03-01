@@ -60,6 +60,20 @@ std::string request::get_header (std::string name)
     }
 }
 
+//get_query_string_param returns the value corresponding to the given query string parameter name (if it exists)
+std::string request::get_query_string_param (std::string name) 
+{
+    std::unordered_map<std::string, std::string>::const_iterator found = query_string_.find(name);
+    if (!(found == query_string_.end()))
+    {
+        return found->second;
+    }
+    else
+    {
+        return "";
+    }
+}
+
 //get_body returns the body of the request as a string
 //TODO: how to represent empty body?
 std::string request::get_body () 
@@ -109,7 +123,8 @@ bool request::parse_status_line(std::string req)
     {
         method_ = m.str(1);
         uri_ = m.str(2);
-        return true;
+        bool qs = parse_query_string();
+        return qs;
     }
     else
     {
@@ -154,6 +169,40 @@ bool request::parse_body(std::string req)
     if (m.size() > 0)
     {
         request_body_ = m.str(1);
+    }
+    
+    return true;
+}
+
+//extract the query string from the URI if it is present
+bool request::parse_query_string()
+{
+    std::regex r("^(.+)\\?(.*)$");
+    std::smatch m;
+    std::regex_search(uri_, m, r);
+    
+    //query string is present
+    if (m.size() == 3)
+    {
+        uri_ = m.str(1);
+        std::string qs = m.str(2);
+        std::regex r1("(.+?)=(.+?)(&*)");
+        std::sregex_iterator iter(qs.begin(), qs.end(), r1);
+        std::sregex_iterator end;
+        
+        while (iter != end)
+        {
+            if (iter->size() == 4)
+            {
+                std::pair<std::string, std::string> h ((*iter)[1], (*iter)[2]);
+                query_string_.insert(h);
+            }
+            else
+            {
+                return false;
+            }
+            ++iter;
+        }
     }
     
     return true;
