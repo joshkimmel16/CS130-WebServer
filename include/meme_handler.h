@@ -5,10 +5,15 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <fstream> 
 #include <unordered_map>
 #include <string>
 #include <regex>
 #include <vector>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 #include "route_handler.h"
 #include "mime_types.h"
 
@@ -33,6 +38,7 @@ private:
     bool generate_new_meme (std::vector<std::string> params, std::string& new_id); //generate new meme and output its ID
     
     //Attributes
+    std::string path_to_meme_templates_;
     std::string path_to_memes_;
 };
 

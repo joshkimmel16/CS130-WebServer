@@ -11,6 +11,7 @@
 #include "status_handler.h"
 #include "server_status_recorder.h"
 #include "reverse_proxy_handler.h"
+#include "meme_handler.h"
 
 //constructor takes a config
 router::router (std::shared_ptr<NginxConfig> config, std::string server_root)
@@ -218,6 +219,10 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
     {
         return static_file_handler::create_handler(get_handler_config("webMeme"), server_root_);
     }
+    else if (handler == "imageMeme")
+    {
+        return static_file_handler::create_handler(get_handler_config("imageMeme"), server_root_);
+    }
     else if (handler == "status") 
     {
         return status_handler::create_handler(get_handler_config("status"), server_root_);
@@ -225,6 +230,10 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
     else if (handler == "proxy")
     {
         return Reverse_proxy_handler::create_handler(get_handler_config("proxy"), server_root_);
+    }
+    else if (handler == "meme")
+    {
+        return meme_handler::create_handler(get_handler_config("meme"), server_root_);
     }
     else
     {       

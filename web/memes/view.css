@@ -1,0 +1,57 @@
+/*general styling*/
+.hide {
+    display: none !important;
+}
+
+.txt {
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+/*styling for header of page*/
+.header {
+    position: fixed;
+    width: 100%;
+    height: 10%;
+    text-align: center;
+}
+
+/*styling for viewer*/
+.viewer {
+    position: fixed;
+    top: 10%;
+    width: 100%;
+    height: 90%;
+    background-color: mediumaquamarine;
+}
+
+/*styling for image selection section*/
+.img {
+    position: absolute;
+    width: 40%;
+    height: 70%;
+    margin-top: 5%;
+    margin-left: 30%;
+    margin-right: 30%;
+    z-index: -1;
+}
+
+/*styling for caption selection section*/
+.caption {
+    font: 2em bold Impact, sans-serif;
+    color: azure;
+    text-align: center;
+}
+
+#topCaption {
+    position: absolute;
+    z-index: 1;
+    margin-left: 48%;
+    margin-top: 10%
+}
+
+#bottomCaption {
+    position: absolute;
+    z-index: 1;
+    margin-left: 48%;
+    margin-top: 30%
+}
