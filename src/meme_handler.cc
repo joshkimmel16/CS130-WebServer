@@ -118,13 +118,25 @@ std::shared_ptr<response> meme_handler::redirect_request (std::shared_ptr<reques
 }
 
 //return a list of all memes as a JSON array
-//TODO: implement this
-//Idea: Create a file for each meme - file name is ID, contains meme template + captions
-//This function loops through the directory containing all of the memes and outputs an array of the file names
 std::shared_ptr<response> meme_handler::meme_list (std::shared_ptr<request> req)
 {
-    std::string output = "[]";
-    
+    std::string output = "[";
+    bool add_comma = false;
+    // loops through the directory containing all of the memes and outputs an array of the file names
+    for (auto it = boost::filesystem::directory_iterator(path_to_memes_); it != boost::filesystem::directory_iterator(); it++)
+    {
+        // append comma before objects (except first object)
+        if (add_comma) {
+            output += ",";
+        }
+        add_comma = true;
+        // append ids (filename without extension)
+        std::string filename = it->path().filename().string();
+        std::size_t ext_pos = filename.find(".txt");
+        output += "\"" + filename.substr(0, ext_pos) + "\"";
+    }
+    output += "]";
+  
     //return JSON array
     std::shared_ptr<response> resp(new response(200, output));
     resp->set_header("Content-Type", get_mime_type(".json"));
@@ -274,7 +286,7 @@ bool meme_handler::body_check(std::string body, std::vector<std::string>& params
         }
         ++iter;
     }
-    
+
     //check memeSelect to ensure it matches the name of one of the template memes
     std::regex r1("\\w+.jpg");
     std::smatch m1;

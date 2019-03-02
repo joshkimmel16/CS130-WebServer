@@ -1,0 +1,17 @@
+/*general styling*/
+.hide {
+  display: none !important;
+}
+
+.txt {
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+/*styling for error message*/
+.errorMsg {
+  position: absolute;
+  margin-left: 30%;
+  margin-top: 10%;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+  font-size: 3em;
+}

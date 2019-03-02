@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <title>Meme List</title>
+    <link rel='shortcut icon' href='/web/memes/favicon.ico'>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css'>
+    <link rel='stylesheet' type='text/css' href='/web/memes/list.css'>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js'></script>
+    <script src='/web/memes/list.js'></script>
+</head>
+<body>
+    <div class='header'>
+        <h1 class='pageTitle txt'>List of Memes</h1>
+    </div>
+    <div class='loader'>
+        <img src='/web/memes/loading.gif' class='img' id='loadImage' />
+    </div>
+    <div class='lister hide'>
+        <ul id="memeList"></ul>
+    </div>
+    <div class='error hide'>
+        <span class='errorMsg'>Sorry, we couldn't find that meme!</span>
+    </div>
+</body>
+</html>
