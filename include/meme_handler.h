@@ -17,6 +17,7 @@
 #include <boost/filesystem.hpp>
 #include "route_handler.h"
 #include "mime_types.h"
+#include "uri_lib.h"
 
 class meme_handler : public route_handler
 {

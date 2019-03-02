@@ -1,4 +1,6 @@
+var loader;
 var viewer;
+var error;
 var memeData = {};
 var img;
 var topCaption;
@@ -8,8 +10,9 @@ var id;
 //main page ready event handler
 $(document).ready(function(e) {
    
+    loader = $(this).find(".loader");
     viewer = $(this).find(".viewer");
-    console.log(viewer);
+    error = $(this).find(".error");
     
     img = viewer.find("#memeImage");
     topCaption = viewer.find("#topCaption");
@@ -33,10 +36,21 @@ function parseUrl () {
 
 //retrieve meme data from the server
 function getMemeData (uri, id) {
-    $.get((uri + "/" + id), function(data) {
-        memeData = data;
-        viewer.trigger("dataReady");
+    $.ajax({
+        url: (uri + "/" + id),
+        type: 'GET',
+        success: function(data){ 
+            memeData = data;
+            viewer.trigger("dataReady");
+        },
+        error: function(data) {
+            displayError();
+        }
     });
+    //$.get((uri + "/" + id), function(data) {
+        //memeData = data;
+        //viewer.trigger("dataReady");
+    //});
 }
 
 //populate meme data on the form
@@ -44,4 +58,12 @@ function populateData () {
     img.attr("src", ("/image/memes/" + memeData.memeSelect));
     topCaption.text(memeData.topCaption);
     bottomCaption.text(memeData.bottomCaption);
+    loader.addClass('hide');
+    viewer.removeClass('hide');
+}
+
+//method to display error to the user
+function displayError () {
+    loader.addClass('hide');
+    error.removeClass('hide');
 }

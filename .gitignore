@@ -6,4 +6,4 @@ mirror
 temp
 *.log
 resources/memes/data
-.swp
+*.swp

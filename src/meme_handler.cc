@@ -267,11 +267,12 @@ bool meme_handler::parse_config ()
 bool meme_handler::body_check(std::string body, std::vector<std::string>& params)
 {
     //parse out necessary body parameters from request - into params
+    body = UriDecode(body);
     std::string meme_template = "";
     std::string top_caption = "";
     std::string bottom_caption = "";
     
-    std::regex r("(\\w+)=([\\w\\.\\,\\?!]+)&*");
+    std::regex r("(\\w+)=([\\w\\.\\,\\?! ]+)&*");
     std::sregex_iterator iter(body.begin(), body.end(), r);
     std::sregex_iterator end;
   
@@ -294,13 +295,13 @@ bool meme_handler::body_check(std::string body, std::vector<std::string>& params
     if (m1.size() == 0) { return false; }
     
     //check topCaption for a valid caption string
-    std::regex r2("[\\w\\.\\,\\?!]+");
+    std::regex r2("[\\w\\.\\,\\?! ]+");
     std::smatch m2;
     std::regex_search(top_caption, m2, r2);
     if (m2.size() == 0) { return false; }
     
     //check bottomCaption for a valid caption string
-    std::regex r3("[\\w\\.\\,\\?!]+");
+    std::regex r3("[\\w\\.\\,\\?! ]+");
     std::smatch m3;
     std::regex_search(bottom_caption, m3, r3);
     if (m3.size() == 0) { return false; }

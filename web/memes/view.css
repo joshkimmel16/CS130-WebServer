@@ -15,6 +15,16 @@
     text-align: center;
 }
 
+/*styling for loader*/
+.loader {
+    position: fixed;
+    top: 10%;
+    width: 100%;
+    height: 90%;
+    background-color: mediumaquamarine;
+}
+
+
 /*styling for viewer*/
 .viewer {
     position: fixed;
@@ -23,6 +33,16 @@
     height: 90%;
     background-color: mediumaquamarine;
 }
+
+/*styling for error display*/
+.error {
+    position: fixed;
+    top: 10%;
+    width: 100%;
+    height: 90%;
+    background-color: mediumaquamarine;
+}
+
 
 /*styling for image selection section*/
 .img {
@@ -54,4 +74,13 @@
     z-index: 1;
     margin-left: 48%;
     margin-top: 30%
+}
+
+/*styling for error message*/
+.errorMsg {
+    position: absolute;
+    margin-left: 30%;
+    margin-top: 10%;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 3em;
 }
