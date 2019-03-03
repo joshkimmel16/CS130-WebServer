@@ -1,0 +1,7 @@
+router {
+    meme {
+        location /memes;
+        memeTemplatePath memes/templates/;
+        memePath memes/data/;
+    }
+}

@@ -7,3 +7,4 @@ temp
 *.log
 resources/memes/data
 *.swp
+tests/memes/data
