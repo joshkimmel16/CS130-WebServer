@@ -72,7 +72,7 @@ test_reverse_proxy() {
   mkdir $TEMP
   echo `pwd`  
   
-  $SERVER_PATH "Integration/config_ucla" > /dev/null 2>1 &
+  $SERVER_PATH "Integration/config_ucla" > /dev/null 2>/dev/null &
   PID=$!
   
   sleep .1
