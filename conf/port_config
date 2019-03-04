@@ -16,9 +16,22 @@ router {
         location /static2;
         root resources/static2;
     }
+    handler webMeme {
+        location /web/memes;
+        root web/memes;
+    }
+    handler imageMeme {
+        location /image/memes;
+        root resources/memes/templates;
+    }
     handler proxy {
         port 80;
         location /ucla;
         root www.ucla.edu;
+    }
+    handler meme {
+        location /memes;
+        memeTemplatePath resources/memes/templates/;
+        memePath resources/memes/data/;
     }
 }
