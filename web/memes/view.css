@@ -58,7 +58,10 @@
 /*styling for caption selection section*/
 .caption {
     font: 2em bold Impact, sans-serif;
-    color: azure;
+    color: black;
+  -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
     text-align: center;
 }
 
