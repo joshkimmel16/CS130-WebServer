@@ -8,4 +8,5 @@ temp
 resources/memes/data
 *.swp
 tests/memes/data/*
+
 !tests/memes/data/.gitkeep
