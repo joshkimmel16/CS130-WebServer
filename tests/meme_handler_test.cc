@@ -190,7 +190,6 @@ TEST_F(MemeHandlerTest, CreateAndViewTest) {
   EXPECT_EQ(body.substr(pic_loc, 13), "ermahgerd.jpg");
   EXPECT_EQ(body.substr(top_loc, 5), "LLONG");
   EXPECT_EQ(body.substr(bot_loc, 11), "TOOOOO LONG");
-
 }
 
 

@@ -7,4 +7,5 @@ temp
 *.log
 resources/memes/data
 *.swp
-tests/memes/data
+tests/memes/data/*
+!tests/memes/data/.gitkeep
