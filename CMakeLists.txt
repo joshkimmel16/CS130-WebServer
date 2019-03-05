@@ -56,6 +56,7 @@ add_library(logger src/logger.cc)
 add_library(reverse_proxy_handler src/reverse_proxy_handler.cc)
 add_library(meme_handler src/meme_handler.cc)
 add_library(uri_lib src/uri_lib.cc)
+add_library(sql_lib src/sql_lib.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
@@ -92,6 +93,9 @@ target_link_libraries(reverse_proxy_handler_test reverse_proxy_handler server_st
 add_executable(meme_handler_test tests/meme_handler_test.cc)
 target_link_libraries(meme_handler_test meme_handler uri_lib request response config_parser gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 
+add_executable(sql_test tests/sql_test.cc)
+target_link_libraries(sql_test sql_lib sqlite3 gtest_main)
+
 
 # TODO(!): Update with test binary
 # gtest_discover_tests(example_lib_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -107,6 +111,7 @@ gtest_discover_tests(status_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURC
 gtest_discover_tests(router_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(reverse_proxy_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(meme_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(sql_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Integration test for simple GET request with no body or extra headers
 add_test(NAME IntegrationTest.SimpleGet
