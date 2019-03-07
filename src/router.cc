@@ -12,6 +12,7 @@
 #include "server_status_recorder.h"
 #include "reverse_proxy_handler.h"
 #include "meme_handler.h"
+#include "health_handler.h"
 
 //constructor takes a config
 router::router (std::shared_ptr<NginxConfig> config, std::string server_root)
@@ -234,6 +235,10 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
     else if (handler == "meme")
     {
         return meme_handler::create_handler(get_handler_config("meme"), server_root_);
+    }
+    else if (handler  == "health")
+    {
+        return health_handler::create_handler(get_handler_config("health"), server_root_);
     }
     else
     {       

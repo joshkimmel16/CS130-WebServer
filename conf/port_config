@@ -8,6 +8,9 @@ router {
     handler status {
         location /status;
     }
+    handler health {
+        location /health;
+    }
     handler static1 {
         location /static1;
         root resources/static1;

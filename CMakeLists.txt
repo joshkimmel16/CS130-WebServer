@@ -57,10 +57,11 @@ add_library(reverse_proxy_handler src/reverse_proxy_handler.cc)
 add_library(meme_handler src/meme_handler.cc)
 add_library(uri_lib src/uri_lib.cc)
 add_library(sql_lib src/sql_lib.cc)
+add_library(health_handler src/health_handler.cc)
 
 # TODO(!): Update executable name, srcs, and deps
 add_executable(server_main src/server_main.cc)
-target_link_libraries(server_main server session config_parser request response logger router echo_handler static_file_handler default_handler status_handler server_status_recorder reverse_proxy_handler meme_handler uri_lib Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
+target_link_libraries(server_main server session config_parser request response logger router echo_handler static_file_handler default_handler status_handler server_status_recorder reverse_proxy_handler meme_handler health_handler sql_lib uri_lib Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 #ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 #include_directories(${Boost_INCLUDE_DIRS})
 #TARGET_LINK_LIBRARIES(server_main ${Boost_LIBRARIES})
@@ -75,9 +76,9 @@ target_link_libraries(request_test request gtest_main)
 add_executable(response_test tests/response_test.cc)
 target_link_libraries(response_test response gtest_main)
 add_executable(session_test tests/session_test.cc)
-target_link_libraries(session_test session request response config_parser logger router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler meme_handler uri_lib server_status_recorder gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
+target_link_libraries(session_test session request response config_parser logger router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler meme_handler health_handler uri_lib server_status_recorder gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 add_executable(server_test tests/server_test.cc)
-target_link_libraries(server_test server session request response config_parser logger router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler meme_handler uri_lib server_status_recorder gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
+target_link_libraries(server_test server session request response config_parser logger router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler meme_handler health_handler uri_lib server_status_recorder gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 add_executable(echo_handler_test tests/echo_handler_test.cc)
 target_link_libraries(echo_handler_test echo_handler request response config_parser gtest_main)
 add_executable(static_file_handler_test tests/static_file_handler_test.cc)
@@ -87,15 +88,15 @@ target_link_libraries(default_handler_test default_handler request response conf
 add_executable(status_handler_test tests/status_handler_test.cc)
 target_link_libraries(status_handler_test status_handler server_status_recorder request response config_parser gtest_main)
 add_executable(router_test tests/router_test.cc)
-target_link_libraries(router_test logger router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler reverse_proxy_handler meme_handler uri_lib request response config_parser server_status_recorder  gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
+target_link_libraries(router_test logger router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler reverse_proxy_handler meme_handler health_handler uri_lib request response config_parser server_status_recorder  gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 add_executable(reverse_proxy_handler_test tests/reverse_proxy_handler_test.cc)
 target_link_libraries(reverse_proxy_handler_test reverse_proxy_handler server_status_recorder request response config_parser gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 add_executable(meme_handler_test tests/meme_handler_test.cc)
 target_link_libraries(meme_handler_test meme_handler uri_lib request response config_parser gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
-
 add_executable(sql_test tests/sql_test.cc)
 target_link_libraries(sql_test sql_lib sqlite3 logger gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
-
+add_executable(health_handler_test tests/health_handler_test.cc)
+target_link_libraries(health_handler_test health_handler request response config_parser gtest_main)
 
 # TODO(!): Update with test binary
 # gtest_discover_tests(example_lib_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -112,6 +113,7 @@ gtest_discover_tests(router_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/t
 gtest_discover_tests(reverse_proxy_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(meme_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 gtest_discover_tests(sql_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+gtest_discover_tests(health_handler_test WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 # Integration test for simple GET request with no body or extra headers
 add_test(NAME IntegrationTest.SimpleGet
@@ -148,4 +150,4 @@ add_test(NAME IntegrationTest.Threading
 # include(cmake/CodeCoverageReportConfig.cmake)
 # generate_coverage_report(TARGETS example_server example_lib TESTS example_lib_test)
 include(cmake/CodeCoverageReportConfig.cmake)
-generate_coverage_report(TARGETS server_main server session config_parser request response router echo_handler static_file_handler reverse_proxy_handler default_handler status_handler server_status_recorder meme_handler  logger TESTS config_parser_test request_test response_test session_test server_test router_test echo_handler_test meme_handler_test static_file_handler_test reverse_proxy_handler_test default_handler_test status_handler_test sql_test)
+generate_coverage_report(TARGETS server_main server session config_parser request response router echo_handler static_file_handler reverse_proxy_handler default_handler health_handler status_handler server_status_recorder meme_handler sql_lib  logger TESTS config_parser_test request_test response_test session_test server_test router_test echo_handler_test meme_handler_test health_handler_test static_file_handler_test reverse_proxy_handler_test default_handler_test status_handler_test sql_test)
