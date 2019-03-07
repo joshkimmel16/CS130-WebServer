@@ -94,7 +94,7 @@ add_executable(meme_handler_test tests/meme_handler_test.cc)
 target_link_libraries(meme_handler_test meme_handler uri_lib request response config_parser gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 
 add_executable(sql_test tests/sql_test.cc)
-target_link_libraries(sql_test sql_lib sqlite3 gtest_main)
+target_link_libraries(sql_test sql_lib sqlite3 logger gtest_main Boost::system Boost::log_setup Boost::log ${Boost_LIBRARIES})
 
 
 # TODO(!): Update with test binary
