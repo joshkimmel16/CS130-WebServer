@@ -87,7 +87,7 @@ TEST_F(MemeHandlerTest, MemeListTest) {
 
 //test that only post and get methods are valid
 TEST_F(MemeHandlerTest, InvalidMethodTest) {
-  std::string input = "DELETE /memes HTTP/1.1\r\n\r\n";
+  std::string input = "TRACE /memes HTTP/1.1\r\n\r\n";
   const int n = input.length();
   char char_arr[n+1];
   strcpy(char_arr, input.c_str());

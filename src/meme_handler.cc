@@ -23,12 +23,23 @@ std::shared_ptr<response> meme_handler::handle_request (std::shared_ptr<request>
     {
         return create_meme(req);
     }
+    else if (method == "PUT")
+    {
+        std::string check = check_uri(req->get_uri());
+        return update_meme(req, check);
+    }
+    else if (method == "DELETE")
+    {
+        std::string check = check_uri(req->get_uri());
+        return delete_meme(req, check);
+    }
     else if (method == "GET")
     {
         //check the URI to determine whether to serve the entire meme list or just a single meme
         std::string check = check_uri(req->get_uri());
         if (check == "create" || check == "create/") { return redirect_request(req, "create"); }
         else if (check == "view" || check == "view/") { return redirect_request(req, "list"); }
+        else if (check.length() > 7 && check.substr(0, 7) == "manage/") { return redirect_request(req, check); }
         else if (check.length() > 5 && check.substr(0, 5) == "view/") { return redirect_request(req, check.substr(5, check.length() - 5)); }
         else if (check == "" || check == "/") { return meme_list(req); }
         else { return get_meme_by_id(req, check); }
@@ -90,6 +101,75 @@ std::shared_ptr<response> meme_handler::create_meme (std::shared_ptr<request> re
     }
 }
 
+//update an existing meme
+std::shared_ptr<response> meme_handler::update_meme (std::shared_ptr<request> req, std::string meme_id)
+{
+    //check body of the request for validity
+    std::vector<std::string> params;
+    bool test = check_id(meme_id);
+    bool check = body_check(req->get_body(), params);
+    
+    if (!(test & check))
+    {
+        //if body is not valid, return 400
+        std::shared_ptr<response> resp(new response(400, "The provided meme update request is invalid!\n"));
+        resp->set_header("Content-Type", "text/plain");
+        return resp;
+    }
+    
+    //TODO: SQL update command
+    //TODO: check if a meme actually got updated (i.e., ID was valid)
+    bool update = true;
+    
+    if (update)
+    {
+        //if update successful, respond with 200
+        std::shared_ptr<response> resp(new response(200, "{\"id\": \"" + meme_id + "\"}"));
+        resp->set_header("Content-Type", "application/json");
+        return resp;
+    }
+    else
+    {
+        //if update unsuccessful, respond with 500
+        std::shared_ptr<response> resp(new response(500, "An error occurred while trying to update the provided meme!\n"));
+        resp->set_header("Content-Type", "text/plain");
+        return resp;
+    }
+}
+
+//delete an existing meme
+std::shared_ptr<response> meme_handler::delete_meme (std::shared_ptr<request> req, std::string meme_id)
+{   
+    bool test = check_id(meme_id);
+    if (!test)
+    {
+        //if body is not valid, return 400
+        std::shared_ptr<response> resp(new response(400, "The provided meme delete request is invalid!\n"));
+        resp->set_header("Content-Type", "text/plain");
+        return resp;
+    }
+    
+    //TODO: SQL delete command
+    //TODO: check if a meme actually got delete (i.e., ID was valid)
+    bool del = true;
+    
+    if (del)
+    {
+        //if delete successful, respond with 200
+        std::shared_ptr<response> resp(new response(200, "{\"id\": \"" + meme_id + "\"}"));
+        resp->set_header("Content-Type", "application/json");
+        return resp;
+    }
+    else
+    {
+        //if delete unsuccessful, respond with 500
+        std::shared_ptr<response> resp(new response(500, "An error occurred while trying to delete the provided meme!\n"));
+        resp->set_header("Content-Type", "text/plain");
+        return resp;
+    }
+}
+
+
 //serve web page with list of all memes (and URL's to view them)
 std::shared_ptr<response> meme_handler::redirect_request (std::shared_ptr<request> req, std::string location)
 {
@@ -107,10 +187,17 @@ std::shared_ptr<response> meme_handler::redirect_request (std::shared_ptr<reques
         resp->set_header("Location", "/web/memes/list.html");
         return resp;
     }
+    else if (location.substr(0, 7) == "manage/")
+    {
+        //redirect to manage web page
+        std::string id = location.substr(7, location.length() - 7);
+        std::shared_ptr<response> resp(new response(303, "Location: /web/memes/manage.html?id=" + id));
+        resp->set_header("Location", "/web/memes/manage.html?id=" + id);
+        return resp;
+    }
     else
     {
         //redirect to viewer web page
-        std::string id = location.substr(5, location.length() - 5);
         std::shared_ptr<response> resp(new response(303, "Location: /web/memes/view.html?id=" + location));
         resp->set_header("Location", "/web/memes/view.html?id=" + location);
         return resp;
@@ -233,6 +320,16 @@ std::string meme_handler::check_uri (std::string uri)
     }
     
     return output;
+}
+
+//check the provided meme ID for correctness
+bool meme_handler::check_id (std::string id)
+{
+    std::regex r("^[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}$");
+    std::smatch m;
+    std::regex_search(id, m, r);
+    
+    return m.size() > 0;
 }
 
 //parse config to necessary attributes
