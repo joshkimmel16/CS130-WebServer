@@ -9,6 +9,7 @@
 #include <regex>
 #include <mutex>
 #include "route_handler.h"
+#include "logger.h"
 
 class router
 {
@@ -21,6 +22,7 @@ public:
     std::shared_ptr<response> route_request (std::shared_ptr<request> req); //apply the appropriate handler to the provided request and generate a response
     std::string get_route_handler (std::string uri); //retrieve the handler for the provided route
     std::string get_header(std::string name); //retrieve a given header by name
+
 private:
     //Methods
     std::shared_ptr<NginxConfig> get_handler_config (std::string handler_name); //retrieve the config for a particular handler
@@ -32,11 +34,12 @@ private:
     std::shared_ptr<NginxConfig> config_;
     std::unordered_map<std::string, std::string> route_map_;
     std::unordered_map<std::string, std::string> headers_;
-    std::string server_root_;
+    std::string server_root_; 
     
     mutable std::mutex route_map_lock_;
     mutable std::mutex header_lock_;
     mutable std::mutex config_lock_;
+    mutable std::mutex log_lock_;
 };
 
 #endif

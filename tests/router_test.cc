@@ -26,7 +26,7 @@ TEST_F(RouterTest, RegisterRoute) {
   out->register_route("/echo", "echo");
   
   EXPECT_EQ(out->get_route_handler("/echo"), "echo"); //route should be registered appropriately
-  EXPECT_EQ(out->get_route_handler("/random"), ""); //missing route should return empty string
+  EXPECT_EQ(out->get_route_handler("/random"), "default"); //missing route should return empty string
 }
 
 //ensure headers are properly registered
@@ -46,7 +46,7 @@ TEST_F(RouterTest, RegisterRoutesFromConfig) {
   EXPECT_EQ(out->get_route_handler("/echo"), "echo"); //route should be registered appropriately
   EXPECT_EQ(out->get_route_handler("/static1"), "static1"); //route should be registered appropriately
   EXPECT_EQ(out->get_route_handler("/static2"), "static2"); //route should be registered appropriately
-  EXPECT_EQ(out->get_route_handler("/random"), ""); //missing route should return empty string
+  EXPECT_EQ(out->get_route_handler("/random"), "default"); //missing route should return empty string
 }
 
 //test echo route

@@ -120,7 +120,7 @@ bool session::handle_error(const boost::system::error_code& error)
 {
     std::shared_ptr<response> resp(new response(500, "Oops! Looks like something went wrong on our side. Please try again later."));
     resp->set_header("Content-Type", "text/plain");
-    
+    LOG_INFO << "ResponseCode::500::RequestHandler::none"; 
     std::string response_string = resp->generate_response();
     std::vector<char> bytes(response_string.begin(), response_string.end());
     write(bytes);
@@ -172,7 +172,7 @@ bool session::handle_invalid_request(std::shared_ptr<request> req)
 {
     std::shared_ptr<response> resp(new response(400, std::string(req->get_raw_request())));
     resp->set_header("Content-Type", "text/plain");
-    
+    LOG_INFO << "ResponseCode::400::RequestHandler::none";
     std::string response_string = resp->generate_response();
     std::vector<char> bytes(response_string.begin(), response_string.end());
     write(bytes);

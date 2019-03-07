@@ -98,8 +98,10 @@ std::shared_ptr<response> router::route_request (std::shared_ptr<request> req)
     std::shared_ptr<response> output = rh->handle_request(req);
     //record uri and response code
     server_status_recorder::get_instance().request_recorder(req->get_uri(), output->get_status_code());
-    //
-
+    //logging response code and handler name
+    log_lock_.lock();
+    LOG_INFO << "ResponseCode::" << output->get_status_code() << "::RequestHandler::" << get_route_handler(longest_prefix_match(req->get_uri()));
+    log_lock_.unlock();
     apply_default_headers(output);
     return output;
 }
@@ -117,7 +119,7 @@ std::string router::get_route_handler (std::string uri)
     else
     {
         std::shared_ptr<NginxConfig> proxy_config = get_handler_config("proxy");
-        return proxy_config != NULL && validProxy(proxy_config, uri) ? "proxy" : "";
+        return proxy_config != NULL && validProxy(proxy_config, uri) ? "proxy" : "default";
     }
 }
 
@@ -234,7 +236,7 @@ std::shared_ptr<route_handler> router::select_handler (std::string uri)
     }
     else if (handler == "meme")
     {
-        return meme_handler::create_handler(get_handler_config("meme"), server_root_);
+	return meme_handler::create_handler(get_handler_config("meme"), server_root_);
     }
     else if (handler  == "health")
     {
