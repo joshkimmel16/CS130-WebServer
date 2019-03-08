@@ -7,6 +7,18 @@
 meme_handler::meme_handler (std::shared_ptr<NginxConfig> config, std::string root_path) : route_handler(config, root_path) 
 {
     parse_config();
+
+    // connect to sql db and create a table
+    sql_manager_ = std::unique_ptr<sql_manager>(new sql_manager("meme.db"));
+    table_name_ = "meme_table";
+    sql_manager_->connect();
+    query_params qp;
+    field_names_ = {"id", "img_path", "top_caption", "bot_caption"};
+    qp.push(field_names_[0], "TEXT PRIMARY KEY NOT NULL");
+    qp.push(field_names_[1], "TEXT NOT NULL");
+    qp.push(field_names_[2], "TEXT NOT NULL");
+    qp.push(field_names_[3], "TEXT NOT NULL");
+    sql_manager_->create_table(table_name_, qp);
 }
 
 //overriden factory method to create a new instance
@@ -119,7 +131,14 @@ std::shared_ptr<response> meme_handler::update_meme (std::shared_ptr<request> re
     
     //TODO: SQL update command
     //TODO: check if a meme actually got updated (i.e., ID was valid)
-    bool update = true;
+    // update meme associated with id meme_id
+    query_params qps;
+    qps.push(field_names_[1], params[0]);
+    qps.push(field_names_[2], params[1]);
+    qps.push(field_names_[3], params[2]);
+    query_params qpw;
+    qpw.push(field_names_[0], meme_id);
+    bool update = sql_manager_->update_record(table_name_, qps, qpw);
     
     if (update)
     {
@@ -151,7 +170,10 @@ std::shared_ptr<response> meme_handler::delete_meme (std::shared_ptr<request> re
     
     //TODO: SQL delete command
     //TODO: check if a meme actually got delete (i.e., ID was valid)
-    bool del = true;
+    // delete meme with id meme_id
+    query_params qp;
+    qp.push(field_names_[0], meme_id);
+    bool del = sql_manager_->delete_record(table_name_, qp);
     
     if (del)
     {
@@ -207,20 +229,20 @@ std::shared_ptr<response> meme_handler::redirect_request (std::shared_ptr<reques
 //return a list of all memes as a JSON array
 std::shared_ptr<response> meme_handler::meme_list (std::shared_ptr<request> req)
 {
+    query_params qp;
+    std::vector<std::vector<std::string>> result = sql_manager_->select_record(table_name_, qp);
     std::string output = "[";
     bool add_comma = false;
     // loops through the directory containing all of the memes and outputs an array of the file names
-    for (auto it = boost::filesystem::directory_iterator(path_to_memes_); it != boost::filesystem::directory_iterator(); it++)
+    for (auto i = 0; i < result.size(); i++)
     {
         // append comma before objects (except first object)
         if (add_comma) {
             output += ",";
         }
         add_comma = true;
-        // append ids (filename without extension)
-        std::string filename = it->path().filename().string();
-        std::size_t ext_pos = filename.find(".txt");
-        output += "\"" + filename.substr(0, ext_pos) + "\"";
+        // append ids
+        output += "\"" + result[i][0] + "\"";
     }
     output += "]";
   
@@ -239,44 +261,20 @@ std::shared_ptr<response> meme_handler::get_meme_by_id (std::shared_ptr<request>
     std::string top_caption = "";
     std::string bottom_caption = "";
     
-    //read the meme data from its file
-    std::string path = (path_to_memes_ + id + ".txt");
-    std::ifstream t(path);
-    if (!t.is_open())
-    {
+    // get meme from db
+    query_params qp;
+    qp.push(field_names_[0], id);
+    std::vector<std::vector<std::string>> result = sql_manager_->select_record(table_name_, qp);
+    if (result.size() == 1) {
+        // result[0][0] is id
+        meme_template = result[0][1];
+        top_caption = result[0][2];
+        bottom_caption = result[0][3];
+    }
+    else {
         std::shared_ptr<response> resp(new response(404, "The requested file could not be found!\n"));
         resp->set_header("Content-Type", "text/plain");
-        return resp;
-    }
-    
-    std::string line;
-    int count = 0;
-    while (std::getline(t, line))
-    {
-        switch (count)
-        {
-            case (0):
-                if (!line.empty()) 
-                {
-                    meme_template = line;
-                }
-                break;
-            case (1):
-                if (!line.empty()) 
-                {
-                    top_caption = line;
-                }
-                break;
-            case (2):
-                if (!line.empty()) 
-                {
-                    bottom_caption = line;
-                }
-                break;
-            default:
-                break;
-        }
-        count++;
+        return resp;   
     }
     
     //all values should be non-empty after reading the file
@@ -416,20 +414,11 @@ bool meme_handler::generate_new_meme (std::vector<std::string> params, std::stri
     boost::uuids::uuid uuid = boost::uuids::random_generator()();
     new_id = boost::lexical_cast<std::string>(uuid);
     
-    //return true if no exception was encountered, false otherwise
-    std::string path = (path_to_memes_ + new_id + ".txt");
-    try
-    {
-        std::ofstream outfile(path);
-        outfile << params[0] << std::endl;
-        outfile << params[1] << std::endl;
-        outfile << params[2] << std::endl;
-        outfile.close();
-    }
-    catch (int e)
-    {
-        return false;
-    }
-    
-    return true;
+    // return true if successfully inserted
+    query_params qp;
+    qp.push(field_names_[0], new_id);
+    qp.push(field_names_[1], params[0]);
+    qp.push(field_names_[2], params[1]);
+    qp.push(field_names_[3], params[2]);
+    return sql_manager_->insert_record(table_name_, qp);
 }

@@ -18,6 +18,7 @@
 #include "route_handler.h"
 #include "mime_types.h"
 #include "uri_lib.h"
+#include "sql_lib.h"
 
 class meme_handler : public route_handler
 {
@@ -45,6 +46,10 @@ private:
     //Attributes
     std::string path_to_meme_templates_;
     std::string path_to_memes_;
+    std::unique_ptr<sql_manager> sql_manager_;
+    std::string table_name_;
+    std::vector<std::string> field_names_;
+
 };
 
 #endif

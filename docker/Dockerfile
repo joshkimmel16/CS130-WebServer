@@ -18,9 +18,6 @@ COPY --from=builder /usr/src/project/conf/port_config .
 COPY --from=builder /usr/src/project/resources ./resources
 COPY --from=builder /usr/src/project/web ./web
 
-# create output folder for memes
-RUN mkdir resources/memes/data
-
 # TODO(!): Expose some port(s)
 EXPOSE 80
 
