@@ -226,3 +226,54 @@ std::vector<std::vector<std::string>> sql_manager::select_record(std::string tab
     sqlite3_finalize(stmt); 
     return result;
 }
+
+//search records in a table under certain conditions
+std::vector<std::vector<std::string>> sql_manager::search_record(std::string table_name, query_params table_params) {
+    // create select prepared statement
+    std::string q = "SELECT * FROM " + table_name + " ";
+    for (unsigned int i=0; i<table_params.selectors.size(); i++)
+    {
+        int bind_param = i + 1;
+        if (i == 0) { q+= "WHERE "; }
+        q += (table_params.selectors[i].first + " LIKE '%' || ?" + std::to_string(bind_param) + "|| '%'");
+        if (i != table_params.selectors.size() - 1) { q += " OR "; }
+        else { q += ";"; }
+    }
+
+    sqlite3_stmt *stmt; 
+    sqlite3_prepare_v2(db_, q.c_str(), -1, &stmt, NULL);
+
+    // bind the ? with values
+    for (unsigned int i=0; i<table_params.selectors.size(); i++)
+    {
+        int bind_param = i + 1;
+        // std::string search = "%" + table_params.selectors[i].second + "%";
+        sqlite3_bind_text(stmt, bind_param, table_params.selectors[i].second.c_str(), -1, SQLITE_STATIC); 
+    }
+   
+    // loop storing the result 
+    std::vector<std::vector<std::string>> result;
+    bool done = false;
+    while (!done) {
+        switch (sqlite3_step (stmt)) {
+            case SQLITE_ROW: {
+                // loops through each column of the row, storing the value
+                std::vector<std::string> temp;
+                for (int i = 0; i < sqlite3_data_count(stmt); i++) {
+                    std::string text = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, i)));
+                    temp.push_back(text);
+                }
+                result.push_back(temp);
+                break;
+            }
+            case SQLITE_DONE:
+                done = true;
+                break;
+            default:
+                LOG_ERROR << "ERROR searching data: " << sqlite3_errmsg(db_);
+                return result;
+        }
+    }
+    sqlite3_finalize(stmt); 
+    return result;
+}

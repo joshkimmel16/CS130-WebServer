@@ -27,6 +27,7 @@ public:
     bool update_record(std::string table_name, query_params set_params, query_params where_params); //update records in a table under certain conditions
     bool delete_record(std::string table_name, query_params table_params); //delete records in a table under certain conditions
     std::vector<std::vector<std::string>> select_record(std::string table_name, query_params table_params); //select records in a table under certain conditions
+    std::vector<std::vector<std::string>> search_record(std::string table_name, query_params table_params); //search records in a table under certain conditions
 private:
     std::string db_name_;
     sqlite3* db_;
