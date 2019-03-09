@@ -304,3 +304,47 @@ TEST_F(MemeHandlerTest, CreateAndViewTest) {
   EXPECT_EQ(body.substr(top_loc, 5), "LLONG");
   EXPECT_EQ(body.substr(bot_loc, 11), "TOOOOO LONG");
 }
+
+
+//simple test if search function works
+TEST_F(MemeHandlerTest, SearchTest) {
+  std::string input = "POST /memes HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nContent-Type: application/x-www-form-urlencoded\r\nCache-Control: max-age=0\r\nContent-Length: 54\r\n\r\nmemeSelect=grumpy.jpg&topCaption=vdank&bottomCaption=9000";
+  const int n = input.length();
+  char char_arr[n+1];
+  strcpy(char_arr, input.c_str());
+  req_char_arr = char_arr;
+  req_len = std::strlen(char_arr);
+  std::shared_ptr<request> req(new request(req_char_arr, req_len));
+
+  std::shared_ptr<route_handler> out = meme_handler::create_handler(config, "");
+  std::shared_ptr<response> res = out->handle_request(req);
+
+  std::string firstID = res->get_body().substr(7, 38);
+  
+  EXPECT_EQ(res->get_status_code(), 201);
+  EXPECT_EQ(res->get_header("Content-Type"), "application/json");
+
+  std::string input2 = "GET /memes/search/9000 HTTP/1.1\r\n\r\n";
+  const int n2 = input2.length();
+  char char_arr2[n2+1];
+  strcpy(char_arr2, input2.c_str());
+  req_char_arr = char_arr2;
+  req_len = std::strlen(char_arr2);
+  std::shared_ptr<request> req2(new request(req_char_arr, req_len));
+
+  std::shared_ptr<response> res2 = out->handle_request(req2);
+
+  EXPECT_THAT(res2->get_body(), HasSubstr(firstID));
+
+  std::string input3 = "GET /memes/search/vdank HTTP/1.1\r\n\r\n";
+  const int n3 = input3.length();
+  char char_arr3[n3+1];
+  strcpy(char_arr3, input3.c_str());
+  req_char_arr = char_arr3;
+  req_len = std::strlen(char_arr3);
+  std::shared_ptr<request> req3(new request(req_char_arr, req_len));
+
+  std::shared_ptr<response> res3 = out->handle_request(req3);
+
+  EXPECT_THAT(res3->get_body(), HasSubstr(firstID));
+}

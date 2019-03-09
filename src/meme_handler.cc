@@ -54,6 +54,7 @@ std::shared_ptr<response> meme_handler::handle_request (std::shared_ptr<request>
         else if (check.length() > 7 && check.substr(0, 7) == "manage/") { return redirect_request(req, check); }
         else if (check.length() > 5 && check.substr(0, 5) == "view/") { return redirect_request(req, check.substr(5, check.length() - 5)); }
         else if (check == "" || check == "/") { return meme_list(req); }
+        else if (check.length() > 7 && check.substr(0, 7) == "search/") { return meme_search(req, check.substr(7, check.length() - 7)); }
         else { return get_meme_by_id(req, check); }
     }
     else
@@ -242,7 +243,36 @@ std::shared_ptr<response> meme_handler::meme_list (std::shared_ptr<request> req)
         }
         add_comma = true;
         // append ids
-        output += "\"" + result[i][0] + "\"";
+        output += "\"" + result[result.size() - 1 - i][0] + "\"";
+    }
+    output += "]";
+  
+    //return JSON array
+    std::shared_ptr<response> resp(new response(200, output));
+    resp->set_header("Content-Type", get_mime_type(".json"));
+    return resp;
+}
+
+std::shared_ptr<response> meme_handler::meme_search (std::shared_ptr<request> req, std::string query)
+{
+    query_params qp;
+    std::string decodedQuery = UriDecode(query);
+    // qp.push(field_names_[1], query);
+    qp.push(field_names_[2], decodedQuery);
+    qp.push(field_names_[3], decodedQuery);
+    std::vector<std::vector<std::string>> result = sql_manager_->search_record(table_name_, qp);
+    std::string output = "[";
+    bool add_comma = false;
+    // loops through the directory containing all of the memes and outputs an array of the file names
+    for (auto i = 0; i < result.size(); i++)
+    {
+        // append comma before objects (except first object)
+        if (add_comma) {
+            output += ",";
+        }
+        add_comma = true;
+        // append ids
+        output += "\"" + result[result.size() - 1 - i][0] + "\"";
     }
     output += "]";
   

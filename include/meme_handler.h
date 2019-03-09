@@ -35,6 +35,7 @@ private:
     std::shared_ptr<response> delete_meme (std::shared_ptr<request> req, std::string meme_id); //delete an existing meme
     std::shared_ptr<response> redirect_request (std::shared_ptr<request> req, std::string location); //redirect to a meme web page
     std::shared_ptr<response> meme_list (std::shared_ptr<request> req); //retrieve all existing memes
+    std::shared_ptr<response> meme_search (std::shared_ptr<request> req, std::string query); //retrieve memes with prefix
     std::shared_ptr<response> get_meme_by_id (std::shared_ptr<request> req, std::string meme_id); //retrieve a particular meme's information
     std::shared_ptr<response> invalid_method (std::shared_ptr<request> req); //generate invalid method response
     std::string check_uri (std::string uri); //check the URI to determine routing action
