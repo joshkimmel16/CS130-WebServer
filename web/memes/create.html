@@ -14,36 +14,42 @@
     <div class='header'>
         <h1 class='pageTitle txt'>Create Your Own Meme</h1>
     </div>
-
-    <div>
-        <img class='title_image' src="https://therideronline.com/wp-content/uploads/2017/01/memes.jpg" alt="meme collage">
+    <div class='loader'>
+        <img src='/web/memes/loading.gif' class='img' id='loadImage' />
     </div>
-
-    <form action='/memes/create' method='post'>
-        <div class='image'>
-            <h2 class='sectionHead txt'>Meme Image Selection</h2>
-            <div class='sectionBody'>
-                <span class='imageDesc txt'>Please select an image to use:</span>
-                <select name='memeSelect' class='imageSelect form-control' required>
-                    <option value=''></option>
-                    <option value='simply.jpg'>One Does Not Simply...</option>
-                    <option value='grumpy.jpg'>Grumpy Cat</option>
-                    <option value='ermahgerd.jpg'>ERMAHGERD!!!</option>
-                </select>
+    <div class='editor' class='hide'>
+        <form action='/memes/create' method='post'>
+            <div class='image'>
+                <h2 class='sectionHead txt'>Meme Image Selection</h2>
+                <div class='sectionBody'>
+                    <span class='imageDesc txt'>Please select an image to use:</span>
+                    <select name='memeSelect' class='imageSelect form-control' required>
+                        <option value=''></option>
+                        <option value='simply.jpg'>One Does Not Simply...</option>
+                        <option value='grumpy.jpg'>Grumpy Cat</option>
+                        <option value='ermahgerd.jpg'>ERMAHGERD!!!</option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class='caption'>
-            <h2 class='sectionHead txt'>Meme Caption Selection</h2>
-            <div class='sectionBody'>
-                <span class='captionDesc txt'>Please enter a top caption:</span>
-                <input type='text' name='topCaption' class='captionInput form-control' required />
-                <span class='captionDesc txt'>Please enter a bottom caption:</span>
-                <input type='text' name='bottomCaption' class='captionInput form-control' required />
+            <div class='caption'>
+                <h2 class='sectionHead txt'>Meme Caption Selection</h2>
+                <div class='sectionBody'>
+                    <span class='captionDesc txt'>Please enter a top caption:</span>
+                    <input type='text' name='topCaption' class='captionInput form-control topC' required />
+                    <span class='captionDesc txt'>Please enter a bottom caption:</span>
+                    <input type='text' name='bottomCaption' class='captionInput form-control bottomC' required />
+                </div>
             </div>
-        </div>
+        </form>
         <div class='submit'>
-            <button type='submit' class='btn btn-primary'>Create Meme</button>
+            <button class='sub btn btn-primary'>Create Meme</button>
         </div>
-    </form>
+    </div>
+    <div class='error hide'>
+        <span class='errorMsg'>Oh no! Something went wrong while trying to create your meme!</span>
+    </div>
+    <div class='success hide'>
+        <span class='successMsg'>Success! You're on your way to meme dankdom. Check your new meme out </span>
+    </div>
 </body>
 </html>

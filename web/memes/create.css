@@ -15,6 +15,14 @@
     margin-right: auto;
 }
 
+/*styling for loader*/
+.loader {
+    position: fixed;
+    top: 10%;
+    width: 100%;
+    height: 90%;
+}
+
 /*styling for header of page*/
 .header {
     width: 100%;
@@ -67,4 +75,34 @@ form {
 .btn {
     margin-left: 45%;
     width: 10%;
+}
+
+/*styling for error display*/
+.error {
+    position: fixed;
+    top: 30%;
+    width: 100%;
+    height: 90%;
+    text-align: center;
+}
+
+/*styling for success display*/
+.success {
+    position: fixed;
+    top: 30%;
+    width: 100%;
+    height: 90%;
+    text-align: center;
+}
+
+.successMsg {
+    color: green;
+    font-size: 2em;
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+.errorMsg {
+    color: red;
+    font-size: 2em;
+    font-family: Verdana, Geneva, sans-serif;
 }

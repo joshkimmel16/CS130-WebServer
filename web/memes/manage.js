@@ -76,11 +76,14 @@ function getMemeData (uri, id) {
 }
 
 function putMemeData (data) {
+    var check = requiredCheck();
+    if (check === false) { alert("Please fill out all fields!"); return; }
     $.ajax({
         url: action,
         type: 'PUT',
         data: form.serialize(),
         success: function(data){ 
+            success.find(".successMsg").text("Congratulations! Your meme is that much more dank now. Check it out ").append("<a href='/memes/view/" + id + "' target='_blank'>Here</a>.");
             displaySuccess();
         },
         error: function(data) {
@@ -95,6 +98,7 @@ function deleteMemeData () {
         url: action,
         type: 'DELETE',
         success: function(data){ 
+            success.find(".successMsg").text("Congratulations! Your meme is no more. Check out the ").append("<a href='/memes/view' target='_blank'>Master List</a>.");
             displaySuccess();
         },
         error: function(data) {
@@ -143,4 +147,10 @@ function toggleDeleteView (event) {
         bottomCaption.attr("disabled", false).attr("required", true);
         method = "PUT";
     }
+}
+
+//check whether all required form fields are filled out
+function requiredCheck () {
+    var toCheck = form.find(":required").filter(function(i) { return $(this).val() === ""; });
+    return (toCheck.length === 0);
 }
