@@ -57,26 +57,24 @@
 
 /*styling for caption selection section*/
 .caption {
-    font: 2em bold Impact, sans-serif;
+    position: absolute;
     color: black;
-  -webkit-text-fill-color: white; /* Will override color (regardless of order) */
-  -webkit-text-stroke-width: 1px;
-  -webkit-text-stroke-color: black;
+    -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
     text-align: center;
+    width: 40%;
+    margin-left: 30%;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 300%;
 }
 
 #topCaption {
-    position: absolute;
-    z-index: 1;
-    margin-left: 48%;
-    margin-top: 10%
+    margin-top: 7%;
 }
 
 #bottomCaption {
-    position: absolute;
-    z-index: 1;
-    margin-left: 48%;
-    margin-top: 30%
+    margin-top: 30%;
 }
 
 /*styling for error message*/
