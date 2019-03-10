@@ -42,7 +42,7 @@ function postMemeData (e) {
         type: 'POST',
         data: form.serialize(),
         success: function(data){ 
-            success.find(".successMsg").append("<a href='/memes/view/" + data.id + "' target='_blank'>Here</a>.");
+            success.find(".successMsg").append("<a href='/memes/view/" + data.id + "'>Here</a>.");
             displaySuccess();
         },
         error: function(data) {

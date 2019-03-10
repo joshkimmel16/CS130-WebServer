@@ -14,14 +14,19 @@
     <div class='header'>
         <h1 class='pageTitle txt'>List of Memes</h1>
     </div>
-    <div class='loader'>
-        <img src='/web/memes/loading.gif' class='img' id='loadImage' />
-    </div>
-    <div class='lister hide'>
-        <ul id="memeList"></ul>
-    </div>
-    <div class='error hide'>
-        <span class='errorMsg'>Sorry, we couldn't find the meme list!</span>
+    <div class='pageBody'>
+        <div class='loader'>
+            <img src='/web/memes/loading.gif' class='img' id='loadImage' />
+        </div>
+        <div class='lister hide'>
+            <div class='create'>
+                <span class='txt'>Feeling creative? Try <a href='/memes/create' target='_blank'>making your own meme</a>!</span>
+            </div>
+            <ul id="memeList"></ul>
+        </div>
+        <div class='error hide'>
+            <span class='errorMsg'>Sorry, we couldn't find the meme list!</span>
+        </div>
     </div>
 </body>
 </html>

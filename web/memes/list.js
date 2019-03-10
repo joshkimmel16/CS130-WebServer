@@ -38,7 +38,7 @@ function getMemeList (uri) {
 //populate meme list
 function populateList () {
     $.each(memeList, function(idx, id){
-        ul.append('<li><a target="_blank" href="/memes/view/' + id + '">' + id +'</a><br><iframe id="frame" src="/memes/view/' + id + '"/></li>')
+        ul.append('<li><a target="_blank" href="/memes/view/' + id + '">View Meme</a><br><a target="_blank" href="/memes/manage/' + id + '">Manage Meme</a><br><iframe id="frame" src="/memes/view/' + id + '"/></li>')
     });
     loader.addClass('hide');
     lister.removeClass('hide');

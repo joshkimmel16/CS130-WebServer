@@ -55,7 +55,10 @@ function sendRequest (e) {
         putMemeData(form.serialize());
     }
     else if (method === "DELETE") {
-        deleteMemeData();
+        var c = confirm("Are you sure you want this meme gone?");
+        if (c === true) {
+            deleteMemeData();
+        }
     }
 }
 
@@ -83,7 +86,7 @@ function putMemeData (data) {
         type: 'PUT',
         data: form.serialize(),
         success: function(data){ 
-            success.find(".successMsg").text("Congratulations! Your meme is that much more dank now. Check it out ").append("<a href='/memes/view/" + id + "' target='_blank'>Here</a>.");
+            success.find(".successMsg").text("Congratulations! Your meme is that much more dank now. Check it out ").append("<a href='/memes/view/" + id + "'>Here</a>.");
             displaySuccess();
         },
         error: function(data) {
@@ -98,7 +101,7 @@ function deleteMemeData () {
         url: action,
         type: 'DELETE',
         success: function(data){ 
-            success.find(".successMsg").text("Congratulations! Your meme is no more. Check out the ").append("<a href='/memes/view' target='_blank'>Master List</a>.");
+            success.find(".successMsg").text("Congratulations! Your meme is no more. Check out the ").append("<a href='/memes/view'>Master List</a>.");
             displaySuccess();
         },
         error: function(data) {
