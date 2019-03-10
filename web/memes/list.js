@@ -76,8 +76,9 @@ function getMemeList (uri, search) {
 
 //populate meme list
 function populateList () {
-    $.each(memeList, function(idx, id){
-        ul.append('<li><a target="_blank" href="/memes/view/' + id + '">View Meme</a><br><a target="_blank" href="/memes/manage/' + id + '">Manage Meme</a><br><iframe id="frame" src="/memes/view/' + id + '"/></li>')
+    $.each(memeList, function(idx, entry){
+        var split_entry = entry.split(":");
+        ul.append('<li><a target="_blank" href="/memes/view/' + split_entry[0] + '">View Meme</a><br><a target="_blank" href="/memes/manage/' + split_entry[0] + '">Manage Meme</a><br><iframe id="frame" src="/image/memes/' + split_entry[2] + '"/><br><p>Top Text: ' + split_entry[3] + '</p><p>Bottom Text: ' + split_entry[4] + '</p><p>Times viewed: ' + split_entry[1] + '</p></li>');
     });
     loader.addClass('hide');
     lister.removeClass('hide');

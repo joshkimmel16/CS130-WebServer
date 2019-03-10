@@ -13,11 +13,12 @@ meme_handler::meme_handler (std::shared_ptr<NginxConfig> config, std::string roo
     table_name_ = "meme_table";
     sql_manager_->connect();
     query_params qp;
-    field_names_ = {"id", "img_path", "top_caption", "bot_caption"};
+    field_names_ = {"id", "img_path", "top_caption", "bot_caption", "times_viewed"};
     qp.push(field_names_[0], "TEXT PRIMARY KEY NOT NULL");
     qp.push(field_names_[1], "TEXT NOT NULL");
     qp.push(field_names_[2], "TEXT NOT NULL");
     qp.push(field_names_[3], "TEXT NOT NULL");
+    qp.push(field_names_[4], "TEXT NOT NULL");
     sql_manager_->create_table(table_name_, qp);
 }
 
@@ -61,6 +62,10 @@ std::shared_ptr<response> meme_handler::handle_request (std::shared_ptr<request>
     {
         return invalid_method(req);
     }
+}
+
+bool meme_handler::compareMemes(std::vector<std::string> meme1, std::vector<std::string> meme2) {
+    return (std::stoi(meme1[4]) < std::stoi(meme2[4]));
 }
 
 //return the appropriate MIME type given a file extension
@@ -232,6 +237,7 @@ std::shared_ptr<response> meme_handler::meme_list (std::shared_ptr<request> req)
 {
     query_params qp;
     std::vector<std::vector<std::string>> result = sql_manager_->select_record(table_name_, qp);
+    std::stable_sort(result.begin(), result.end(), compareMemes);
     std::string output = "[";
     bool add_comma = false;
     // loops through the directory containing all of the memes and outputs an array of the file names
@@ -243,7 +249,8 @@ std::shared_ptr<response> meme_handler::meme_list (std::shared_ptr<request> req)
         }
         add_comma = true;
         // append ids
-        output += "\"" + result[result.size() - 1 - i][0] + "\"";
+        output += "\"" + result[result.size() - 1 - i][0] + ":" + result[result.size() - 1 - i][4] + ":" + result[result.size() - 1 - i][1] +
+        ":" + result[result.size() - 1 - i][2] + ":" + result[result.size() - 1 - i][3] + "\"";
     }
     output += "]";
   
@@ -261,6 +268,7 @@ std::shared_ptr<response> meme_handler::meme_search (std::shared_ptr<request> re
     qp.push(field_names_[2], decodedQuery);
     qp.push(field_names_[3], decodedQuery);
     std::vector<std::vector<std::string>> result = sql_manager_->search_record(table_name_, qp);
+    std::stable_sort(result.begin(), result.end(), compareMemes);
     std::string output = "[";
     bool add_comma = false;
     // loops through the directory containing all of the memes and outputs an array of the file names
@@ -272,7 +280,8 @@ std::shared_ptr<response> meme_handler::meme_search (std::shared_ptr<request> re
         }
         add_comma = true;
         // append ids
-        output += "\"" + result[result.size() - 1 - i][0] + "\"";
+        output += "\"" + result[result.size() - 1 - i][0] + ":" + result[result.size() - 1 - i][4] + ":" + result[result.size() - 1 - i][1] +
+        ":" + result[result.size() - 1 - i][2] + ":" + result[result.size() - 1 - i][3] + "\"";
     }
     output += "]";
   
@@ -300,6 +309,14 @@ std::shared_ptr<response> meme_handler::get_meme_by_id (std::shared_ptr<request>
         meme_template = result[0][1];
         top_caption = result[0][2];
         bottom_caption = result[0][3];
+
+        int curr_times_viewed = std::stoi(result[0][4]);
+        query_params qps;
+        qps.push(field_names_[4], std::to_string(curr_times_viewed + 1));
+        query_params qpw;
+        qpw.push(field_names_[0], result[0][0]);
+        bool update = sql_manager_->update_record(table_name_, qps, qpw);
+
     }
     else {
         std::shared_ptr<response> resp(new response(404, "The requested file could not be found!\n"));
@@ -450,5 +467,7 @@ bool meme_handler::generate_new_meme (std::vector<std::string> params, std::stri
     qp.push(field_names_[1], params[0]);
     qp.push(field_names_[2], params[1]);
     qp.push(field_names_[3], params[2]);
+    qp.push(field_names_[4], "0");
     return sql_manager_->insert_record(table_name_, qp);
 }
+

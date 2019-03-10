@@ -43,6 +43,7 @@ private:
     bool parse_config (); //retrieve all necessary info from the input config
     bool body_check(std::string body, std::vector<std::string>& params); //check body and parse values into vector
     bool generate_new_meme (std::vector<std::string> params, std::string& new_id); //generate new meme and output its ID
+    static bool compareMemes(std::vector<std::string> meme1, std::vector<std::string> meme2);
     
     //Attributes
     std::string path_to_meme_templates_;

@@ -35,7 +35,7 @@ TEST_F(MemeHandlerTest, MemeListTest) {
   std::shared_ptr<route_handler> out = meme_handler::create_handler(config, "");
   std::shared_ptr<response> res = out->handle_request(req);
 
-  std::string firstID = res->get_body().substr(7, 38);
+  std::string firstID = res->get_body().substr(8, 36) + ":0";
   
   EXPECT_EQ(res->get_status_code(), 201);
   EXPECT_EQ(res->get_header("Content-Type"), "application/json");
@@ -50,7 +50,7 @@ TEST_F(MemeHandlerTest, MemeListTest) {
 
   std::shared_ptr<response> res2 = out->handle_request(req2);
 
-  std::string secondID = res2->get_body().substr(7, 38);
+  std::string secondID = res2->get_body().substr(8, 36) + ":0";
   
   EXPECT_EQ(res2->get_status_code(), 201);
   EXPECT_EQ(res2->get_header("Content-Type"), "application/json");
@@ -65,7 +65,7 @@ TEST_F(MemeHandlerTest, MemeListTest) {
 
   std::shared_ptr<response> res3 = out->handle_request(req3);
 
-  std::string thirdID = res3->get_body().substr(7, 38);
+  std::string thirdID = res3->get_body().substr(8, 36) + ":0";
   
   EXPECT_EQ(res3->get_status_code(), 201);
   EXPECT_EQ(res3->get_header("Content-Type"), "application/json");
@@ -470,7 +470,7 @@ TEST_F(MemeHandlerTest, BadDeleteTest) {
 }
 
 //simple test if search function works
-TEST_F(MemeHandlerTest, SearchTest) {
+TEST_F(MemeHandlerTest, SimpleSearchTest) {
   std::string input = "POST /memes HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nContent-Type: application/x-www-form-urlencoded\r\nCache-Control: max-age=0\r\nContent-Length: 54\r\n\r\nmemeSelect=grumpy.jpg&topCaption=vdank&bottomCaption=9000";
   const int n = input.length();
   char char_arr[n+1];
@@ -482,7 +482,7 @@ TEST_F(MemeHandlerTest, SearchTest) {
   std::shared_ptr<route_handler> out = meme_handler::create_handler(config, "");
   std::shared_ptr<response> res = out->handle_request(req);
 
-  std::string firstID = res->get_body().substr(7, 38);
+  std::string firstID = res->get_body().substr(8, 36) + ":0";
   
   EXPECT_EQ(res->get_status_code(), 201);
   EXPECT_EQ(res->get_header("Content-Type"), "application/json");
@@ -511,3 +511,66 @@ TEST_F(MemeHandlerTest, SearchTest) {
 
   EXPECT_THAT(res3->get_body(), HasSubstr(firstID));
 }
+
+//more complicated case with multiple occurences
+TEST_F(MemeHandlerTest, ComplicatedSearchTest) {
+  std::string input = "POST /memes HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nContent-Type: application/x-www-form-urlencoded\r\nCache-Control: max-age=0\r\nContent-Length: 54\r\n\r\nmemeSelect=grumpy.jpg&topCaption=yuge&bottomCaption=big";
+  const int n = input.length();
+  char char_arr[n+1];
+  strcpy(char_arr, input.c_str());
+  req_char_arr = char_arr;
+  req_len = std::strlen(char_arr);
+  std::shared_ptr<request> req(new request(req_char_arr, req_len));
+
+  std::shared_ptr<route_handler> out = meme_handler::create_handler(config, "");
+  std::shared_ptr<response> res = out->handle_request(req);
+
+  std::string firstID = res->get_body().substr(8, 36) + ":0";
+  
+  EXPECT_EQ(res->get_status_code(), 201);
+  EXPECT_EQ(res->get_header("Content-Type"), "application/json");
+
+  std::string input2 = "POST /memes HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nContent-Type: application/x-www-form-urlencoded\r\nCache-Control: max-age=0\r\nContent-Length: 54\r\n\r\nmemeSelect=grumpy.jpg&topCaption=fantastic&bottomCaption=yuge";
+  const int n2 = input2.length();
+  char char_arr2[n2+1];
+  strcpy(char_arr2, input2.c_str());
+  req_char_arr = char_arr2;
+  req_len = std::strlen(char_arr2);
+  std::shared_ptr<request> req2(new request(req_char_arr, req_len));
+
+  std::shared_ptr<response> res2 = out->handle_request(req2);
+
+  std::string secondID = res2->get_body().substr(8, 36) + ":0";
+
+  EXPECT_EQ(res2->get_status_code(), 201);
+  EXPECT_EQ(res2->get_header("Content-Type"), "application/json");
+
+  std::string input3 = "POST /memes HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nContent-Type: application/x-www-form-urlencoded\r\nCache-Control: max-age=0\r\nContent-Length: 54\r\n\r\nmemeSelect=grumpy.jpg&topCaption=no&bottomCaption=nope";
+  const int n3 = input3.length();
+  char char_arr3[n3+1];
+  strcpy(char_arr3, input3.c_str());
+  req_char_arr = char_arr3;
+  req_len = std::strlen(char_arr3);
+  std::shared_ptr<request> req3(new request(req_char_arr, req_len));
+
+  std::shared_ptr<response> res3 = out->handle_request(req3);
+
+  std::string thirdID = res3->get_body().substr(8, 36) + ":0";
+
+  EXPECT_EQ(res3->get_status_code(), 201);
+  EXPECT_EQ(res3->get_header("Content-Type"), "application/json");
+
+  std::string input4 = "GET /memes/search/yuge HTTP/1.1\r\n\r\n";
+  const int n4 = input4.length();
+  char char_arr4[n4+1];
+  strcpy(char_arr4, input4.c_str());
+  req_char_arr = char_arr4;
+  req_len = std::strlen(char_arr4);
+  std::shared_ptr<request> req4(new request(req_char_arr, req_len));
+
+  std::shared_ptr<response> res4 = out->handle_request(req4);
+
+  EXPECT_THAT(res4->get_body(), HasSubstr(firstID));
+  EXPECT_THAT(res4->get_body(), HasSubstr(secondID));
+}
+
